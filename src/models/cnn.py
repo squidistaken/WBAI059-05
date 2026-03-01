@@ -97,6 +97,5 @@ class CNNClassifier(nn.Module):
 
         if use_softmax:
             return F.softmax(logits, dim=1)
-
         else:
             return torch.argmax(logits, dim=1) + 1

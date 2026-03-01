@@ -21,9 +21,14 @@ from typing import Literal
 class AGNews:
     """Class to handle loading and vectorizing the AG News dataset."""
 
-    def __init__(self, path: Path | str = "data/ag_news") -> None:
+    def __init__(self, path: Path | str = "data/ag_news", verbose: bool = True) -> None:
         """Initialize the class and load/vectorize the dataset."""
         self.path = Path(path)
+        self.verbose = verbose
+        if self.verbose:
+            LOGGER.log_and_print(
+                Panel("Initializing AGNews dataset...", style="bold yellow")
+            )
 
         if len(list(self.path.glob("*.csv"))) < 3:
             if DEBUG:
@@ -101,6 +106,10 @@ class AGNewsWord2Vec(AGNews, metaclass=SingletonMeta):
     def __init__(self, path: Path | str | None = None, verbose: bool = True) -> None:
         self.path = Path(path) if path is not None else DATA_DIR
         self.verbose = verbose
+        if self.verbose:
+            LOGGER.log_and_print(
+                Panel("Initializing AGNewsWord2Vec dataset...", style="bold yellow")
+            )
 
         if len(list(self.path.glob("*.csv"))) < 3:
             if DEBUG:
@@ -220,7 +229,6 @@ class AGNewsWord2Vec(AGNews, metaclass=SingletonMeta):
         else:
             raise ValueError("Invalid split name. Use 'train', 'dev', or 'test'.")
 
-        # Avoiding .to_list() limits Python object allocation overhead
         X = self._pad_sequences(df["embeddings"], max_length)
 
         # Pull numeric array for memory-efficient one_hot conversion
@@ -259,7 +267,7 @@ class AGNewsWord2VecDataset(Dataset):
         """Return a single sample from the dataset."""
         seq = self.df["embeddings"][idx]
 
-        # Zero-pad buffer (avoids expensive logic of torch.pad on arbitrary lists)
+        # Zero-pad buffer
         padded_embedding = torch.zeros((256, 100), dtype=torch.float32)
 
         if seq is not None and len(seq) > 0:

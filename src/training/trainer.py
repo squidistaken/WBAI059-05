@@ -10,6 +10,7 @@ from src.const import LOGGER, DEVICE
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Optional
+from pathlib import Path
 
 # Define plotting style.
 plt.style.use("seaborn-v0_8-dark-palette")
@@ -69,7 +70,8 @@ class Trainer:
         self,
         num_epochs: int = 10,
         learning_rate: float = 1e-3,
-        config: dict = {},
+        optimizer: optim.Optimizer = optim.Adam,
+        criterion: nn.Module = nn.CrossEntropyLoss,
         early_stopping: bool = False,
         patience: int = 3,
     ) -> None:
@@ -91,11 +93,9 @@ class Trainer:
         self.reset_history()
 
         # Set up optimizer and loss function.
-        optimizer = config.get("optimizer", optim.Adam)(
-            self.model.parameters(), lr=learning_rate
-        )
-        criterion = config.get("criterion", nn.CrossEntropyLoss)()
-
+        optimizer = optimizer(self.model.parameters(), lr=learning_rate)
+        criterion = criterion().to(DEVICE)
+        
         if early_stopping:
             best_eval_loss = float("inf")
             best_model_state = None
@@ -210,7 +210,7 @@ class Trainer:
         if show:
             plt.show()
 
-    def save_model(self, path: str) -> None:
+    def save_model(self, path: str | Path) -> None:
         """Save the model.
 
         Args:
@@ -219,7 +219,7 @@ class Trainer:
         torch.save(self.model.state_dict(), path)
         LOGGER.info(f"Model saved to {path}")
 
-    def load_model(self, path: str) -> None:
+    def load_model(self, path: str | Path) -> None:
         """Load the model.
 
         Args:
