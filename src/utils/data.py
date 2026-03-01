@@ -3,6 +3,7 @@ from torch import as_tensor, Tensor
 from typing import Any, Literal
 
 from src.const import DEVICE
+from torch import cuda
 
 
 class TorchDataset(Dataset):
@@ -31,3 +32,10 @@ class TorchDataset(Dataset):
             tuple[Tensor, Tensor]: A tuple containing the feature tensor and label tensor for the sample.
         """
         return self.X[idx], self.y[idx]
+
+def get_available_vram():
+    """Get the available VRAM on the current device."""
+    if cuda.is_available():
+        return cuda.get_device_properties(DEVICE).total_memory / (1024 ** 3)  # Convert to GB
+    else:
+        return 0.0

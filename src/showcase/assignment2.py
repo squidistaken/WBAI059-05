@@ -1,4 +1,4 @@
-from src.data.data import AGNewsWord2Vec
+from src.data.data import AGNewsWord2Vec, AGNewsWord2VecDataset
 from src.models.cnn import CNNClassifier
 from src.training.trainer import Trainer
 from src.utils.output import get_output_path
@@ -6,6 +6,7 @@ from src.const import CONSOLE, DATA_DIR, RETRAIN_MODEL, LOGGER, DEVICE
 from src.training.eval import evaluate_model, analyze_model_errors
 from rich.panel import Panel
 from src.utils.ui import cli_menu
+from src.utils.data import get_available_vram
 from typing import Optional
 import torch
 
@@ -93,9 +94,18 @@ class Assignment2Showcase:
             LOGGER.log_and_print(
                 Panel("[bold yellow]Training CNN Classifier...[/bold yellow]")
             )
-            train_data = self.ds.get_torch_dataset("train")
-            dev_data = self.ds.get_torch_dataset("dev")
-
+            
+            if get_available_vram() > 16.0:
+                train_data = self.ds.get_torch_dataset("train")
+                dev_data = self.ds.get_torch_dataset("dev")
+            else:
+                LOGGER.log_and_print(
+                    Panel(
+                        f"[bold red]Warning: Available VRAM is low ({get_available_vram():.2f} GB). Using (slow) memory efficient preprocessing for training.[/bold red]"
+                    )
+                )
+                train_data = AGNewsWord2VecDataset(path=DATA_DIR, split="train")
+                dev_data = AGNewsWord2VecDataset(path=DATA_DIR, split="test")
             trainer = Trainer(
                 model=cnn_model,
                 train_data=train_data,
