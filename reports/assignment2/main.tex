@@ -13,9 +13,10 @@
 \usepackage{amsmath} % essential additional math options
 \usepackage{xcolor} % for more color options, and colored text
 \usepackage{subcaption}
+\usepackage{booktabs}
 
 \usepackage[style=ieee]{biblatex}
-\addbibresource{references.bib}
+\addbibresource{reports/references.bib}
 
 %% Recommended packages
 
@@ -49,7 +50,7 @@
             pdfstartview=FitB,
             pdfpagelayout=OneColumn,
             pdftitle={Experiment X Report},
-            pdfauthor={M. Doe, P.P. Recies},
+            pdfauthor={T Boermsa, J.W. Sprietsma, M.H.O Persson},
         }
 
 % Stuff for code & algorithms
@@ -127,7 +128,7 @@
     }
 \hypersetup{ % PDF metadata
     pdftitle={NLP Assignment2},
-    pdfauthor={Teun Boersma and Marcus Persson},
+    pdfauthor={Teun Boersma, Julian Sprietsma and Marcus Persson},
     }
 
 
@@ -149,10 +150,10 @@
 % Let's go!
 \begin{document}
 
+
 % Title page
 \begin{titlingpage}   
     \maketitle
-    
 \end{titlingpage}
 
 
@@ -165,14 +166,74 @@
 }
 
 \section{Dataset \& Setup}
+This project focuses on the AGNews Dataset, created by Zhang et al. \cite{AGNews}. The dataset consists of 120k training datapoints and 7.6k testing points. Each datapoint consists of a title and a description of a news article. These are around 45 and 200 characters long on average. Each article is categorised based on topic. The set of labels consists of World, Sports, Business and Sci/Tech ($C=4$, $y\in\{1,2,3,4\}$). This project aims to investigate the performance of baseline models on this task. For hyperparameter tuning and testing, a random development split of 10\% was taken from the training set.
+
+To train models, first, the data needs to be preprocessed. The first step was to concatenate the title and the description into a single string of text, which makes it easier to use both features. After this, some basic preprocessing is done, removing short words 
+
+Next, an embedding needs to be made. For this purpose, a Word2Vec vectorizer was trained on the training data, after filtering out words that appear less than 3 times. An embedding dimension of 100 was used; the vectorizer was trained using a window of length 5 across 10 epochs. 
+
+Every process is carried out with a set random seed; 33 was chosen for this.
 
 \section{Models}
+This report details an ablation study on sequence length. This is done for two types of models: a recurrent Long Short-Term Memory (LSTM) Model and a Convolutional Neural Network. Both models are used to encode the sequence, after which a linear model extracts the prediction. Detailed in Equation \eqref{eq:linmodel}. The exact dimensions of $\boldsymbol{W}$ differ for the LSTM and CNN models.
+
+\begin{equation}
+    \boldsymbol{a} = \boldsymbol{W}\boldsymbol{x}
+    \label{eq:linmodel}
+\end{equation}
+
+This results in a vector of 4 logits. To convert these logits to a probability, the softmax activation function is used, specified in Equation \eqref{eq:softmax} \cite{pml1Book}.
+
+\begin{equation}
+    p(y=c|\boldsymbol{x}, \boldsymbol{W}) = \frac{e^{a_c}}{\sum_{c'=1}^C e^{a_{c'}} }
+    \label{eq:softmax}
+\end{equation}
+
+The next two sections will explain the LSTM and CNN models in more detail.
+
+\subsection{LSTM}
+The LSTM is a gated Recurrent Neural Network (RNN). The LSTM, aside from the standard hidden state vector $\boldsymbol{h}_t$, also has a cell state $\boldsymbol{c}_t$. Like in many RNNs the input $\boldsymbol{x}_t$ is combined with the last cell state $\boldsymbol{h}_{t-1}$ to provide the input for that timestep $t$. An LSTM sets itself apart by its usage of gates, which determine what information from the cell state is forgotten, what information is added and what information is used to construct the hidden state. These gates are labeled $\boldsymbol{f}_t$, $\boldsymbol{i}_t$ and $\boldsymbol{o}_t$, respectively. This results in a set of update equations shown below \cite{jm3}:
+
+\begin{align}
+    \boldsymbol{f}_t &= \sigma(\boldsymbol{U}_f\boldsymbol{h}_{t-1} + \boldsymbol{W}_f\boldsymbol{x}_t) \\
+    \boldsymbol{i}_t &= \sigma(\boldsymbol{U}_i\boldsymbol{h}_{t-1} + \boldsymbol{W}_i\boldsymbol{x}_t) \\
+    \boldsymbol{o}_t &= \sigma(\boldsymbol{U}_o\boldsymbol{h}_{t-1} + \boldsymbol{W}_o\boldsymbol{x}_t) \\
+    \boldsymbol{g}_t &= \tanh(\boldsymbol{U}_g\boldsymbol{h}_{t-1} + \boldsymbol{W}_g\boldsymbol{x}_t) \\
+    \boldsymbol{c}_t &= \boldsymbol{c}_{t-1} \odot \boldsymbol{f}_t + \boldsymbol{g}_t\odot \boldsymbol{i}_t \\
+    \boldsymbol{h}_t &= \boldsymbol{o}_t \odot \tanh(\boldsymbol{c}_t)
+\end{align}
+
+Where $\boldsymbol{U}$ and $\boldsymbol{W}$ are matrices and $\odot$ signifies the elementwise (Hadamard) product. The sigmoid function $\sigma(x)$ is given by Equation \eqref{eq:sigmoid}.
+
+\begin{equation}
+    \sigma(x) = \dfrac{e^x}{1+e^x}
+    \label{eq:sigmoid}
+\end{equation}
+
+In this report, a bidirectional version of this system is used, which entails that the input signal is fed through the system both forwards and backwards, and the hidden states are concatenated. Additionally, a layered structure is used. This means that four LSTM-Cells as detailed above were used. The hidden cells $h_{t}^i$ of the $i$-th layer served as the input ($x_t$ in the equations above) for the  $i+1$'th layer. This structure is capable of capturing complex patterns more easily. The model used in the ablation study consisted of four hidden layers. Due to the increased complexity of the LSTM cells, this was chosen to provide a similar model complexity as the CNN. A more detailed tabular overview of the model architecture is presented in Table \ref{tab:lstm-architecture} of Appendix \ref{ap:arch}
+
+
+\subsection{CNN}
+The architecture used for the CNN focuses on a 1D convolution operation across the sequence. This is done for five filters of different lengths, from 3-7 words long. The convolution operation results in a new sequence of vectors $\boldsymbol{h}(t)$ where $t$ specifies the index in the sequence \cite{Goodfellow-et-al-2016}.
+
+\begin{equation}
+    \boldsymbol{h}(t) = (\boldsymbol{x} * \boldsymbol{w})(t) = \sum_n x(t+n)w(t)
+\end{equation}
+
+Thus, after applying each of the five convolutions, we are left with five sequences, which are pooled together using a max-pooling operation to five vectors of dimension 100; the ReLU activation function (Equation \eqref{eq:relu}) is called on each. Lastly, these vectors are concatenated and form the input for the final linear model in Equation \eqref{eq:linmodel}.
+
+\begin{equation}
+    \text{ReLU} (x) = \max(0,x)
+    \label{eq:relu}
+\end{equation}
+
+The weights of the CNN were initialised using Xavier Uniform initialisation. Here, weights are sampled from a uniform distribution with bounds based on the model complexity. The exact architecture is presented in detail in Table \ref{tab:cnn-architecture} of Appendix \ref{ap:arch}.
+
 
 \section{Experimental Protocol}
+The models discussed above were implemented using PyTorch \cite{paszke2019pytorchimperativestylehighperformance}. As briefly mentioned before, the purpose of this report is to investigate the performance of the LSTM and CNN models for a varying sequence length. To do this, a model will be trained on data for each maximum sequence length $L \in [32,64,128,256]$. The sequences will be padded or cut down to the required length for ease of computation. Both models are trained using the same Word2Vec embedding. The model architectures discussed in Appendix \ref{ap:arch}, will remain constant. Additionally, for both models and all values $L$, the Adam optimiser is used with a starting learning rate of $10^{-3}$. Lastly, training is done for a maximum of 50 epochs, with early stopping configured to stop training after three epochs without improvement.
 
 \section{Results}
-
-\section{Error Analysis}
 
 \section{Discussion}
 
@@ -183,9 +244,119 @@
 % Here be appendices!
 \newpage
 \appendix
+\section{GitHub Repository}
+
+The URL to the GitHub Repository: \href{https://github.com/TeunB6/natural-language-processing}{https://github.com/TeunB6/natural-language-processing}. For viewing purposes, the main branch is \texttt{main}.
+
 \section{AI-Use Statement}
-\section{Additional Plots}
-\label{ap:plots}
+
+Generative AI was utilised with the purpose and intention of accelerating the development of the project with regard to providing examples on implementing certain features, for example, the CLI UX. Permitted tools were OpenAI ChatGPT, Google Gemini, and GitHub Copilot, with the agreement that training of the models was disabled. Generated code was only used as a reference for comparison to the original written code, to provide any insight on technical scope and considerations we may have missed during development. Autocomplete features were used with human review, and the final product of the project is 100\% human reviewed.
+
+\section{Model Architectures}\label{ap:arch}
+\begin{table}[h]
+\centering
+\caption{LSTM Classifier Model Architecture}
+\label{tab:lstm-architecture}
+\begin{tabular}{>{\bfseries}p{1cm} p{4cm} p{3cm} >{\raggedright\arraybackslash}p{5.5cm}}
+\toprule
+\textbf{Layer} & \textbf{Type} & \textbf{Output Shape} & \textbf{Parameters / Description} \\
+\midrule
+1 & Dropout & ($N$, $L$, $E$) & Dropout rate: 0.5 \\
+\midrule
+2 & LSTM & ($N$, $L$, $2H$) & 
+\begin{tabular}[c]{@{}p{5.8cm}@{}}
+- Input size: $E = 100$\\
+- Hidden size: $H = 100$\\
+- Number of layers: 4)\\
+- Bidirectional: True\\
+- Dropout between each layer with dropout rate: 0.5\\
+- Output: final hidden states from all time steps
+\end{tabular} \\
+\midrule
+3 & Hidden State Concatenation & ($N$, $2H$) & 
+\begin{tabular}[c]{@{}p{5.8cm}@{}}
+Concatenates last hidden states from both directions.\\
+\end{tabular} \\
+\midrule
+4 & Dropout & ($N$, $2H$) & Dropout rate: 0.5 \\
+\midrule
+5 & Fully Connected (Linear) & ($N$, $C$) & 
+\begin{tabular}[c]{@{}p{5.8cm}@{}}
+- Input: $2H$\\
+- Output: $C =4$ \\
+- No activation (logits output)
+\end{tabular} \\
+\midrule
+6 & Softmax (Optional) & ($N$, $C$) & 
+\begin{tabular}[c]{@{}p{5.8cm}@{}}
+Converts logits to class probabilities
+\end{tabular} \\
+\bottomrule
+\end{tabular}
+\vspace{0.5cm}
+\footnotesize{\textbf{Note:} Here $N$ is the batch size and $L$ is the sequence length.}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{CNN Classifier Model Architecture}
+\label{tab:cnn-architecture}
+\begin{tabular}{>{\bfseries}p{1cm} p{4cm} p{3cm} >{\raggedright\arraybackslash}p{5.5cm}}
+\toprule
+\textbf{Layer} & \textbf{Type} & \textbf{Output Shape} & \textbf{Parameters / Description} \\
+\midrule
+1 & Permute & ($N$, $E$, $L$) & 
+\begin{tabular}[c]{@{}p{5.8cm}@{}}
+Reshapes input from ($N$, $L$, $E$) to ($N$, $E$, $L$) for 1D Convolution
+\end{tabular} \\
+\midrule
+2 & Convolutional Layers & ($N$, $F$, $L'$) & 
+\begin{tabular}[c]{@{}p{5.8cm}@{}}
+Multiple parallel convolutions with:\\
+- Input channels: $E = 100$\\
+- Output channels: $F = 100$\\
+- Filter sizes: $K = [3,4,5,6,7]$\\
+- Activation: ReLU after each convolution\\
+- $L' = L - k + 1$ (sequence length after convolution, where $k\in K$)
+\end{tabular} \\
+\midrule
+3 & Adaptive Max Pooling & ($N$, $F$, 1) & 
+\begin{tabular}[c]{@{}p{5.8cm}@{}}
+Global max pooling over the sequence dimension. Extracts the most important feature for each filter.
+\end{tabular} \\
+\midrule
+4 & Squeeze & ($N$, $F$) & 
+\begin{tabular}[c]{@{}p{5.8cm}@{}}
+Removes the last dimension (size 1)
+\end{tabular} \\
+\midrule
+5 & Concatenation & ($N$, $F \times |K|$) & 
+\begin{tabular}[c]{@{}p{5.8cm}@{}}
+Concatenates outputs from all filter sizes.\\
+$F \times |K| = 100 \times 5 = 500$
+\end{tabular} \\
+\midrule
+6 & Dropout & ($N$, $F \times |K|$) & Dropout rate: 0.5 \\
+\midrule
+7 & Fully Connected (Linear) & ($N$, $C$) & 
+\begin{tabular}[c]{@{}p{5.8cm}@{}}
+- Input: $F \times |K| = 500$\\
+- Output: $C = 4$\\
+\end{tabular} \\
+\midrule
+8 & Softmax (Optional) & ($N$, $C$) & 
+\begin{tabular}[c]{@{}p{5.8cm}@{}}
+Converts logits to class probabilities
+\end{tabular} \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5cm}
+\footnotesize{\textbf{Note:} Here $N$ is the batch size and $L$ is the sequence length.}
+\end{table}
+
+% \section{Additional Plots}
+% \label{ap:plots}
 
 
 \newpage
