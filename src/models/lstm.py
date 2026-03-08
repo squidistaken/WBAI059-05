@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from typing import Optional, Dict
 
+
 class LSTMClassifier(nn.Module):
     """Class for a v Classifier on NLP."""
 
@@ -24,7 +25,7 @@ class LSTMClassifier(nn.Module):
         num_classes = config.get("num_classes", 4)
         num_layers = config.get("num_layers", 4)
         dropout_rate = config.get("dropout", 0.5)
-        
+
         self.dropout = nn.Dropout(dropout_rate)
 
         self.dropout = nn.Dropout(dropout_rate)
@@ -36,17 +37,18 @@ class LSTMClassifier(nn.Module):
             dropout=dropout_rate if num_layers > 1 else 0.0,
             bidirectional=True,
         )
-        
-        self.fc = nn.Linear(2*hidden_dim, num_classes)
+
+        self.fc = nn.Linear(2 * hidden_dim, num_classes)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.dropout(x)
         output, (h_n, c_n) = self.lstm(x)
-        h_last = torch.cat((h_n[-2,:,:], h_n[-1,:,:]), dim=1)  # Concatenate the final hidden states from both directions
+        h_last = torch.cat(
+            (h_n[-2, :, :], h_n[-1, :, :]), dim=1
+        )  # Concatenate the final hidden states from both directions
         drop = self.dropout(h_last)
         out = self.fc(drop)
         return out
-
 
     def predict(self, x: torch.Tensor, return_prob: bool = True) -> torch.Tensor:
         self.eval()
@@ -57,5 +59,3 @@ class LSTMClassifier(nn.Module):
             return F.softmax(logits, dim=1)
         else:
             return torch.argmax(logits, dim=1) + 1
-        
-

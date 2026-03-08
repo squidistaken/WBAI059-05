@@ -38,7 +38,8 @@ class Trainer:
         self,
         model: nn.Module,
         train_data: TorchDataset,
-        eval_data: TorchDataset,
+        dev_data: TorchDataset,
+        test_data: Optional[TorchDataset] = None,
         batch_size: int = 32,
     ) -> None:
         """Initialize the trainer.
@@ -57,13 +58,21 @@ class Trainer:
             shuffle=True,
         )
 
-        self.eval_loader = DataLoader(
-            eval_data,
+        self.dev_loader = DataLoader(
+            dev_data,
             batch_size=batch_size,
             shuffle=False,
         )
         
-        
+        if test_data is not None:
+            self.test_loader = DataLoader(
+                test_data,
+                batch_size=batch_size,
+                shuffle=False,
+            )
+        else:
+            self.test_loader = None
+
     def reset_history(self):
         """Reset the training history."""
         self.history = {"train_loss": [], "eval_loss": []}
@@ -119,15 +128,15 @@ class Trainer:
                 loss.backward()
                 optimizer.step()
 
+                self.history["train_loss"].append(loss.item())
                 total_loss += loss.item()
 
             avg_loss = total_loss / len(self.train_loader)
-            self.history["train_loss"].append(avg_loss)
             eval_loss = self.evaluate(criterion)
 
             self.history["eval_loss"].append(eval_loss)
 
-            LOGGER.log_and_print(f"Epoch {epoch+1}/{num_epochs}, Loss: {avg_loss:.4f}")
+            LOGGER.log_and_print(f"Epoch {epoch+1}/{num_epochs}, Train Loss: {avg_loss:.4f}, Eval Loss: {eval_loss:.4f}")
 
             if early_stopping:
                 if eval_loss < best_eval_loss:
@@ -158,7 +167,7 @@ class Trainer:
             self.model.load_state_dict(best_model_state)
             LOGGER.log_and_print("Restored the best model weights from early stopping.")
 
-    def evaluate(self, criterion: nn.Module, use_predict: bool = False) -> float:
+    def evaluate(self, criterion: nn.Module, use_predict: bool = False, use_test: bool = False) -> float:
         """Evaluate the model on the evaluation set.
 
         Args:
@@ -170,17 +179,27 @@ class Trainer:
         self.model.eval()
 
         total_loss = 0
+                
+        if use_test and self.test_loader is None:
+            LOGGER.warning("Test loader is not available. Evaluating on dev set instead.")
+            loader = self.dev_loader
+        elif use_test and self.test_loader is not None:
+            loader = self.test_loader
+        else:
+            loader = self.dev_loader
 
         with torch.no_grad():
-            for batch in self.eval_loader:
+            for batch in loader:
                 inputs, labels = batch[0].to(DEVICE), batch[1].to(DEVICE)
                 outputs = (
-                    self.model.predict(inputs, return_prob=False) if use_predict else self.model(inputs)
+                    self.model.predict(inputs, return_prob=False)
+                    if use_predict
+                    else self.model(inputs)
                 )
                 loss = criterion(outputs, labels)
                 total_loss += loss.item()
 
-        return total_loss / len(self.eval_loader)
+        return total_loss / len(loader)
 
     def plot_history(self, show: bool = True, save_path: Optional[str] = None) -> None:
         """Plot the training and evaluation loss history.
@@ -194,8 +213,8 @@ class Trainer:
         # Create x-axis values for train and eval loss based on the number of recorded losses.
         x_train = np.asarray(range(1, len(self.history["train_loss"]) + 1))
         x_eval = np.asarray(range(1, len(self.history["eval_loss"]) + 1))
-        x_eval = x_eval * (
-            len(self.history["train_loss"]) / len(self.history["eval_loss"])
+        x_train = x_train * (
+            len(self.history["eval_loss"]) / len(self.history["train_loss"])
         )
 
         plt.figure()

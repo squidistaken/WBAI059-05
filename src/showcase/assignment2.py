@@ -117,7 +117,7 @@ class Assignment2Showcase:
         cnn_model.eval()
 
         return cnn_model
-    
+
     def get_or_train_lstm_model(self):
         """Get the trained LSTM model or train a new one if it doesn't exist."""
         output_dir = get_output_path(assignment=2)
@@ -143,8 +143,12 @@ class Assignment2Showcase:
                     torch.load(model_path, map_location=DEVICE, weights_only=True)
                 )
             except RuntimeError as e:
-                LOGGER.log_and_print(Panel(f"[bold red]Error loading model: {e}[/bold red]"))
-                LOGGER.log_and_print(Panel(f"[bold yellow]Training new model...[/bold yellow]"))
+                LOGGER.log_and_print(
+                    Panel(f"[bold red]Error loading model: {e}[/bold red]")
+                )
+                LOGGER.log_and_print(
+                    Panel(f"[bold yellow]Training new model...[/bold yellow]")
+                )
                 self._train_lstm(lstm_model, output_dir, model_path)
         lstm_model.eval()
 
@@ -178,16 +182,22 @@ class Assignment2Showcase:
         cli_menu(
             "Analyze errors for which split?",
             {
-                "Dev Set": lambda: (analyze_model_errors(
-                    cnn_model, self.ds, split="dev", min_examples=10
-                    ), analyze_model_errors(
+                "Dev Set": lambda: (
+                    analyze_model_errors(
+                        cnn_model, self.ds, split="dev", min_examples=10
+                    ),
+                    analyze_model_errors(
                         lstm_model, self.ds, split="dev", min_examples=10
-                )),
-                "Test Set": lambda: (analyze_model_errors(
-                    cnn_model, self.ds, split="test", min_examples=10
-                ), analyze_model_errors(
-                    lstm_model, self.ds, split="test", min_examples=10
-                )),
+                    ),
+                ),
+                "Test Set": lambda: (
+                    analyze_model_errors(
+                        cnn_model, self.ds, split="test", min_examples=10
+                    ),
+                    analyze_model_errors(
+                        lstm_model, self.ds, split="test", min_examples=10
+                    ),
+                ),
                 "Back to Menu": lambda: None,
             },
         )
@@ -227,6 +237,7 @@ class Assignment2Showcase:
         if get_available_vram() > 16.0:
             train_data = self.ds.get_torch_dataset("train", max_length=max_series_len)
             dev_data = self.ds.get_torch_dataset("dev", max_length=max_series_len)
+            test_data = self.ds.get_torch_dataset("test", max_length=max_series_len)
         else:
             LOGGER.log_and_print(
                 Panel(
@@ -239,17 +250,19 @@ class Assignment2Showcase:
             dev_data = AGNewsWord2VecDataset(
                 path=DATA_DIR, split="test", max_length=max_series_len
             )
+            test_data = AGNewsWord2VecDataset(
+                path=DATA_DIR, split="test", max_length=max_series_len
+            )
         trainer = Trainer(
             model=cnn_model,
             train_data=train_data,
-            eval_data=dev_data,
+            dev_data=dev_data,
+            test_data=test_data,
             batch_size=64,
         )
 
         # Train the CNN Model
-        trainer.train(
-            num_epochs=1, learning_rate=1e-3, early_stopping=True, patience=5
-        )
+        trainer.train(num_epochs=20, learning_rate=1e-3, early_stopping=True, patience=3)
 
         # Plot and save Training History
         if plot_path is None:
@@ -258,8 +271,12 @@ class Assignment2Showcase:
 
         # Save the trained model
         trainer.save_model(model_path)
-        
-        acc = trainer.evaluate(lambda pred, labels: torch.sum(pred == (torch.argmax(labels, dim=1) + 1)) / len(labels), use_predict=True)
+
+        acc = trainer.evaluate(
+            lambda pred, labels: torch.sum(pred == (torch.argmax(labels, dim=1) + 1))
+            / len(labels),
+            use_predict=True,
+        )
 
         LOGGER.log_and_print(
             Panel(
@@ -269,15 +286,23 @@ class Assignment2Showcase:
         if return_trainer:
             return trainer
 
-    def _train_lstm(self, lstm_model: LSTMClassifier, output_dir: Path, model_path: Path, return_trainer:bool = True) -> None: 
-        #TODO: reduce code duplication with _train_cnn (reason for seperate function is mainly to set lr and stuff differently for lstm, should be refactored)
+    def _train_lstm(
+        self,
+        lstm_model: LSTMClassifier,
+        output_dir: Path,
+        model_path: Path,
+        plot_path: Optional[Path] = None,
+        return_trainer: bool = True,
+    ) -> Trainer | None:
+        # TODO: reduce code duplication with _train_cnn (reason for seperate function is mainly to set lr and stuff differently for lstm, should be refactored)
         LOGGER.log_and_print(
             Panel("[bold yellow]Training LSTM Classifier...[/bold yellow]")
         )
-        
+
         if get_available_vram() > 16.0:
             train_data = self.ds.get_torch_dataset("train")
             dev_data = self.ds.get_torch_dataset("dev")
+            test_data = self.ds.get_torch_dataset("test")
         else:
             LOGGER.log_and_print(
                 Panel(
@@ -286,24 +311,33 @@ class Assignment2Showcase:
             )
             train_data = AGNewsWord2VecDataset(path=DATA_DIR, split="train")
             dev_data = AGNewsWord2VecDataset(path=DATA_DIR, split="test")
+            test_data = AGNewsWord2VecDataset(path=DATA_DIR, split="test")
         trainer = Trainer(
             model=lstm_model,
             train_data=train_data,
-            eval_data=dev_data,
+            dev_data=dev_data,
+            test_data=test_data,
             batch_size=64,
         )
 
         # Train the LSTM Model
-        trainer.train(num_epochs=50, learning_rate=1e-3, early_stopping=True, patience=3)
+        trainer.train(
+            num_epochs=20, learning_rate=1e-3, early_stopping=True, patience=3
+        )
 
         # Plot and save Training History
-        plot_path = output_dir / "lstm_training_history.png"
+        if plot_path is None:
+            plot_path = output_dir / "lstm_training_history.png"
         trainer.plot_history(show=False, save_path=str(plot_path))
 
         # Save the trained model
         trainer.save_model(model_path)
 
-        acc = trainer.evaluate(lambda pred, labels: torch.sum(pred == (torch.argmax(labels, dim=1) + 1)) / len(labels), use_predict=True)
+        acc = trainer.evaluate(
+            lambda pred, labels: torch.sum(pred == (torch.argmax(labels, dim=1) + 1))
+            / len(labels),
+            use_predict=True,
+        )
 
         LOGGER.log_and_print(
             Panel(
@@ -313,15 +347,16 @@ class Assignment2Showcase:
 
         if return_trainer:
             return trainer
-    
+
     def ablation_study(self, parameter: str):
         # Placeholder for ablation study functionality
 
         if parameter == "max_sequence_length":
             # Example of how to modify the dataset for different max sequence lengths
-            results = {}
+            results = {"cnn": {"test" : {}, "dev" : {}}, "lstm": {"test" : {}, "dev" : {}}}
+            vals = [16, 32, 64, 128, 256]
             for max_length in track(
-                [32, 64, 128, 256, 512],
+                vals,
                 description="Running ablation study on max sequence length...",
             ):
                 cnn_model = CNNClassifier(
@@ -334,32 +369,96 @@ class Assignment2Showcase:
                     }
                 ).to(DEVICE)
 
+                lstm_model = LSTMClassifier(
+                    config={
+                        "embedding_dim": 100,
+                        "hidden_dim": 100,
+                        "num_classes": 4,
+                        "num_layers": 4,
+                        "dropout": 0.5,
+                    }
+                ).to(DEVICE)
+
+                # CNN training and logging
                 trainer = self._train_cnn(
                     cnn_model,
                     output_dir=get_output_path(assignment=2),
                     model_path=get_output_path(assignment=2)
                     / f"cnn_model_maxlen_{max_length}.pt",
-                    plot_path=get_output_path(assignment=2) / f"cnn_training_history_maxlen_{max_length}.png",
+                    plot_path=get_output_path(assignment=2)
+                    / f"cnn_training_history_maxlen_{max_length}.png",
                     max_series_len=max_length,
                 )
-                acc = trainer.evaluate(
-                    lambda pred, labels: torch.sum(pred == labels) / len(labels),
+                
+                accuracy = lambda pred, labels: torch.sum(
+                        pred == (torch.argmax(labels, dim=1) + 1)
+                    ) / len(labels)
+                
+                acc_cnn_test = trainer.evaluate(
+                    accuracy,
                     use_predict=True,
+                    use_test=True, 
                 )
-                results[max_length] = acc
+                
+                acc_cnn_dev = trainer.evaluate(
+                    accuracy,
+                    use_predict=True,
+                    use_test=False,
+                )
+
+                # LSTM training and logging
+                trainer = self._train_lstm(
+                    lstm_model,
+                    output_dir=get_output_path(assignment=2),
+                    model_path=get_output_path(assignment=2)
+                    / f"lstm_model_maxlen_{max_length}.pt",
+                    plot_path=get_output_path(assignment=2)
+                    / f"lstm_training_history_maxlen_{max_length}.png",
+                )
+                
+                acc_lstm_test = trainer.evaluate(
+                    accuracy,
+                    use_predict=True,
+                    use_test=True,
+                )
+                acc_lstm_dev = trainer.evaluate(
+                    accuracy,
+                    use_predict=True,
+                    use_test=False,
+                )
+                
+                results["cnn"]["test"][max_length] = acc_cnn_test
+                results["cnn"]["dev"][max_length] = acc_cnn_dev
+                results["lstm"]["test"][max_length] = acc_lstm_test
+                results["lstm"]["dev"][max_length] = acc_lstm_dev
 
             LOGGER.log_and_print(
                 Panel(
-                    "[bold cyan]Ablation Study Results:[/bold cyan]\n"
+                    "[bold cyan]Ablation Study Results on Test:[/bold cyan]\n"
                     + "\n".join(
                         [
-                            f"Max Length: {length:3d} | Accuracy: {acc:.4f}"
-                            for length, acc in results.items()
+                            f"Max Sequence Length: {val} - CNN Accuracy: {results['cnn']["test"][val]:.4f}, LSTM Accuracy: {results['lstm']["test"][val]:.4f}"
+                            for val in vals
+                        ]
+                    ) + "\n\n" +
+                    "[bold cyan]Ablation Study Results on Dev:[/bold cyan]\n"
+                    + "\n".join(
+                        [
+                            f"Max Sequence Length: {val} - CNN Accuracy: {results['cnn']["dev"][val]:.4f}, LSTM Accuracy: {results['lstm']["dev"][val]:.4f}"
+                            for val in vals
                         ]
                     ),
                     style="bold green",
                 )
             )
+
+            with open(
+                get_output_path(assignment=2) / "ablation_study_results.csv", "w"
+            ) as f:
+                f.write("model,max_sequence_length,accuracy_test,accuracy_dev\n")
+                for val in vals:
+                    f.write(f"cnn,{val},{results['cnn']["test"][val]:.4f},{results['cnn']["dev"][val]:.4f}\n")
+                    f.write(f"lstm,{val},{results['lstm']["test"][val]:.4f},{results['lstm']["dev"][val]:.4f}\n")
 
         else:
             LOGGER.log_and_print(
