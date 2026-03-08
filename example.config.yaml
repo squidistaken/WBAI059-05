@@ -1,6 +1,6 @@
 paths:
   data: "data/ag_news"
-  model: "model"
+  model: "models"
   results: "results"
 random_seed: 33
 debug: False
