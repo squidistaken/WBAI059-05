@@ -1,5 +1,6 @@
 from src.data.data import AGNewsWord2Vec, AGNewsWord2VecDataset
 from src.models.cnn import CNNClassifier
+from src.models.lstm import LSTMClassifier
 from src.training.trainer import Trainer
 from src.utils.output import get_output_path
 from src.const import CONSOLE, DATA_DIR, RETRAIN_MODEL, LOGGER, DEVICE
@@ -116,6 +117,38 @@ class Assignment2Showcase:
         cnn_model.eval()
 
         return cnn_model
+    
+    def get_or_train_lstm_model(self):
+        """Get the trained CNN model or train a new one if it doesn't exist."""
+        output_dir = get_output_path(assignment=2)
+        model_path = output_dir / "lstm_model.pt"
+
+        # Setup Configuration for LSTM
+
+        lstm_config = {
+            "vocab_size": 100,
+            "num_classes": 4,
+            "num_filters": 100,
+            "dropout": 0.5,
+        }
+
+        lstm_model = LSTMClassifier(config=lstm_config).to(DEVICE)
+
+        if RETRAIN_MODEL or not model_path.exists():
+            self._train_cnn(lstm_model, output_dir, model_path)
+        else:
+            LOGGER.info(f"Loading LSTM model from {model_path}")
+            try:
+                lstm_model.load_state_dict(
+                    torch.load(model_path, map_location=DEVICE, weights_only=True)
+                )
+            except RuntimeError as e:
+                LOGGER.log_and_print(Panel(f"[bold red]Error loading model: {e}[/bold red]"))
+                LOGGER.log_and_print(Panel(f"[bold yellow]Training new model...[/bold yellow]"))
+                self._train_cnn(lstm_model, output_dir, model_path)
+        lstm_model.eval()
+
+        return lstm_model
 
     def train_and_evaluate_cnn(self, split: int | None = None):
         """Train (if needed) and evaluate the CNN model."""
@@ -156,11 +189,17 @@ class Assignment2Showcase:
 
     def lstm_placeholder(self):
         # Placeholder for LSTM training/evaluation
-        panel = Panel(
-            "LSTM training/evaluation functionality is not implemented yet.",
-            style="bold yellow",
+        lstm_model = self.get_or_train_lstm_model()
+
+        # Evaluate the Model
+        cli_menu(
+            "Evaluate CNN on which set?",
+            {
+                "Dev Set": lambda: evaluate_model(lstm_model, self.ds, use_test=False),
+                "Test Set": lambda: evaluate_model(lstm_model, self.ds, use_test=True),
+                "Back to Menu": lambda: None,
+            },
         )
-        LOGGER.log_and_print(panel)
 
     def _train_cnn(
         self,
@@ -220,6 +259,47 @@ class Assignment2Showcase:
         if return_trainer:
             return trainer
 
+    def _train_lstm(self, lstm_model: LSTMClassifier, output_dir: Path, model_path: Path) -> None: 
+        #TODO: reduce code duplication with _train_cnn (reason for seperate function is mainly to set lr and stuff differently for lstm, should be refactored)
+        LOGGER.log_and_print(
+            Panel("[bold yellow]Training LSTM Classifier...[/bold yellow]")
+        )
+        
+        if get_available_vram() > 16.0:
+            train_data = self.ds.get_torch_dataset("train")
+            dev_data = self.ds.get_torch_dataset("dev")
+        else:
+            LOGGER.log_and_print(
+                Panel(
+                    f"[bold red]Warning: Available VRAM is low ({get_available_vram():.2f} GB). Using (slow) memory efficient preprocessing for training.[/bold red]"
+                )
+            )
+            train_data = AGNewsWord2VecDataset(path=DATA_DIR, split="train")
+            dev_data = AGNewsWord2VecDataset(path=DATA_DIR, split="test")
+        trainer = Trainer(
+            model=lstm_model,
+            train_data=train_data,
+            eval_data=dev_data,
+            batch_size=64,
+        )
+
+        # Train the LSTM Model
+        trainer.train(num_epochs=50, learning_rate=1e-7, early_stopping=True, patience=5)
+
+        # Plot and save Training History
+        plot_path = output_dir / "lstm_training_history.png"
+        trainer.plot_history(show=False, save_path=str(plot_path))
+
+        # Save the trained model
+        trainer.save_model(model_path)
+
+        LOGGER.log_and_print(
+            Panel(
+                f"[bold green]Training complete!\nHistory plot saved to {plot_path}\nModel saved to {model_path}[/bold green]"
+            )
+        )
+
+    
     def ablation_study(self, parameter: str):
         # Placeholder for ablation study functionality
 
