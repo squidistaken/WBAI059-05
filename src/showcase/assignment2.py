@@ -78,7 +78,7 @@ class Assignment2Showcase:
                 )
                 break
 
-            neighbors = self.ds.nearest_neighbors(word, topn=10)
+            neighbors = self.ds.nearest_neighbors(word, top_n=10)
 
             if neighbors:
                 panel = Panel(
