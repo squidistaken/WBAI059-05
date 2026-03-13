@@ -4,18 +4,18 @@ import numpy as np
 from rich.table import Table
 from rich.panel import Panel
 import textwrap
-from src.const import LOGGER
-from src.data.data import AGNews
+from src.const import LOGGER, DEVICE
+from src.data.data import AGNews, AGNewsWord2Vec
+import torch
 
 
 class ErrorAnalyzer:
-    """Class to analyze and display misclassifications of a modal on a provided
-    dataset split (dev/test)."""
+    """Class to analyze and display misclassifications for a trained modal."""
 
     def __init__(
         self,
         model: Any,
-        ds: AGNews,
+        ds: AGNews | AGNewsWord2Vec,
         min_examples: int = 10,
         show_full_text: bool = False,
         wrap_width: int = 80,
@@ -46,6 +46,7 @@ class ErrorAnalyzer:
         self.confidence = None
         self.misclassifications = {}
         self.error_stats = {}
+        self.current_split = None
 
     def analyze(self, split: str = "dev") -> Dict[Tuple[int, int], List[Dict]]:
         """Analyze misclassifications in a given dataset split.
@@ -76,42 +77,64 @@ class ErrorAnalyzer:
         Raises:
             ValueError: If the split is unknown.
         """
+        self.current_split = split
+
         match split:
             case "dev":
-                self.X, self.y, self.df = (
-                    self.ds.X_dev,
-                    self.ds.y_dev,
-                    self.ds.dev_df,
-                )
+                self.y, self.df = self.ds.y_dev, self.ds.dev_df
+                self.X = self.ds.X_dev if hasattr(self.ds, "X_dev") else None
 
             case "test":
-                self.X, self.y, self.df = (
-                    self.ds.X_test,
-                    self.ds.y_test,
-                    self.ds.test_df,
-                )
+                self.y, self.df = self.ds.y_test, self.ds.test_df
+                self.X = self.ds.X_test if hasattr(self.ds, "X_test") else None
 
             case _:
                 raise ValueError(f"Unknown split: {split}")
 
     def _generate_predictions(self) -> None:
         """Generate predictions and confidence scores for the split."""
-        self.predictions = self.model.predict(self.X)
+        if isinstance(self.model, torch.nn.Module):
+            # If the model is from PyTorch, run batched inference.
+            self.model.eval()
 
-        if hasattr(self.model, "predict_proba"):
-            self.confidence = np.max(self.model.predict_proba(self.X), axis=1)
+            preds = []
+            probs = []
+            torch_ds = self.ds.get_torch_dataset(self.current_split)
 
-        elif hasattr(self.model, "decision_function"):
-            decisions = self.model.decision_function(self.X)
-            decisions = (
-                np.max(np.abs(decisions), axis=1)
-                if len(decisions.shape) > 1
-                else np.abs(decisions)
-            )
-            self.confidence = 1 / (1 + np.exp(-decisions))
+            with torch.no_grad():
+                for i in range(0, len(torch_ds.X), 64):
+                    batch = torch_ds.X[i : i + 64].float().to(DEVICE)
+                    logits = self.model(batch)
 
+                    preds.append(torch.argmax(logits, dim=1).cpu().numpy() + 1)
+                    probs.append(
+                        torch.nn.functional.softmax(logits, dim=1)
+                        .cpu()
+                        .numpy()
+                    )
+
+            self.predictions = np.concatenate(preds)
+            self.confidence = np.max(np.concatenate(probs), axis=1)
         else:
-            self.confidence = None
+            # Else, analyze errors using SKLearn on TF-IDF arrays
+            self.predictions = self.model.predict(self.X)
+
+            if hasattr(self.model, "predict_proba"):
+                self.confidence = np.max(
+                    self.model.predict_proba(self.X), axis=1
+                )
+
+            elif hasattr(self.model, "decision_function"):
+                decisions = self.model.decision_function(self.X)
+                decisions = (
+                    np.max(np.abs(decisions), axis=1)
+                    if len(decisions.shape) > 1
+                    else np.abs(decisions)
+                )
+                self.confidence = 1 / (1 + np.exp(-decisions))
+
+            else:
+                self.confidence = None
 
     def _extract_misclassifications(self) -> None:
         """Extract misclassified examples and group them by (predicted_label,
@@ -233,7 +256,7 @@ class ErrorAnalyzer:
             LOGGER.log_and_print(warning_panel)
             return None
 
-        # Flatten all misclassifications into a single list
+        # Flatten all misclassifications into a single list.
         all_errors = [
             ex
             for examples in self.misclassifications.values()

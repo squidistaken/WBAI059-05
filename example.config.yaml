@@ -1,0 +1,7 @@
+paths:
+  data: "data/ag_news"
+  model: "models"
+  results: "results"
+random_seed: 33
+debug: False
+retrain_model: False

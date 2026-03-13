@@ -1,5 +1,5 @@
 from pathlib import Path
-from src.const import RESULTS_DIR
+from src.const import MODEL_DIR
 
 
 def get_output_path(assignment: int) -> Path:
@@ -12,7 +12,7 @@ def get_output_path(assignment: int) -> Path:
         Path to the output directory.
     """
 
-    output_dir = RESULTS_DIR / f"assignment_{assignment}"
+    output_dir = MODEL_DIR / f"assignment_{assignment}"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     return output_dir

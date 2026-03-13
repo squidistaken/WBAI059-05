@@ -1,212 +1,100 @@
-from src.data.data import AGNews
-from src.training.eval import evaluate_model, analyze_model_errors
-from src.training.train import train_model, get_model
-from src.training.gridsearch import svm_gridsearch
 import argparse
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
-import numpy as np
 from rich.panel import Panel
-from src.const import CONSOLE, DATA_DIR, DEBUG, RETRAIN_MODEL, LOGGER
+from src.const import DEBUG, LOGGER
 from src.utils.ui import cli_menu
-from typing import Optional
 import os
 import sys
-
-
-def assignment1_showcase(
-    ds: AGNews,
-    choice: Optional[int] = None,
-) -> None:
-    """Showcase Assignment 1.
-
-    Args:
-        ds (AGNews): The AG News dataset object.
-        choice (Optional[int], optional): The choice of functionality to
-                                          showcase. Defaults to None.
-    """
-
-    def train_and_evaluate() -> None:
-        """Train baseline models and evaluate them on dev/test sets."""
-
-        # Logistic Regression model
-        if RETRAIN_MODEL:
-            panel = Panel(
-                "Training: Logistic Regression Model...",
-                style="bold yellow",
-            )
-            LOGGER.log_and_print(panel)
-            logreg_model = train_model(
-                LogisticRegression(max_iter=1000),
-                ds,
-                assignment=1,
-            )
-        else:
-            logreg_model = get_model(
-                LogisticRegression(max_iter=1000),
-                ds,
-                assignment=1,
-            )
-
-        # SVM model
-        if RETRAIN_MODEL:
-            panel = Panel("Training: SVM...", style="bold yellow")
-            LOGGER.log_and_print(panel)
-            svm_model = train_model(
-                SVC(kernel="linear", C=0.1),
-                ds,
-                assignment=1,
-            )
-        else:
-            svm_model = get_model(
-                SVC(kernel="linear", C=0.1),
-                ds,
-                assignment=1,
-            )
-
-        # Evaluate both models on the set
-        cli_menu(
-            "Evaluate on which set?",
-            {
-                "Dev Set": lambda: (
-                    evaluate_model(logreg_model, ds),
-                    evaluate_model(svm_model, ds),
-                ),
-                "Test Set": lambda: (
-                    evaluate_model(logreg_model, ds, use_test=True),
-                    evaluate_model(svm_model, ds, use_test=True),
-                ),
-                "Back to Menu": lambda: None,
-            },
-        )
-
-    def grid_search() -> None:
-        """Perform SVM grid search to find the best hyperparameters."""
-        panel = Panel(
-            "WARNING: Running SVM Grid Search can take a long time.",
-            style="bold red",
-        )
-        LOGGER.log_and_print(panel)
-        param_grid = {"C": np.logspace(-3, 3, 7), "kernel": ["linear"]}
-
-        svm_gridsearch(
-            ds=ds,
-            param_grid=param_grid,
-            eval=True,
-            assignment=1,
-        )
-
-    def analyze_errors():
-        """Analyze model errors."""
-        logreg_model = get_model(
-            LogisticRegression(max_iter=1000),
-            ds,
-            assignment=1,
-        )
-        svm_model = get_model(
-            SVC(kernel="linear", C=0.1),
-            ds,
-            assignment=1,
-        )
-
-        cli_menu(
-            "Analyze errors for which split?",
-            {
-                "Dev Set": lambda: (
-                    analyze_model_errors(
-                        logreg_model, ds, split="dev", min_examples=10
-                    ),
-                    analyze_model_errors(
-                        svm_model, ds, split="dev", min_examples=10
-                    ),
-                ),
-                "Test Set": lambda: (
-                    analyze_model_errors(
-                        logreg_model, ds, split="test", min_examples=10
-                    ),
-                    analyze_model_errors(
-                        svm_model, ds, split="test", min_examples=10
-                    ),
-                ),
-                "Back to Menu": lambda: None,
-            },
-        )
-
-        analyze_model_errors(logreg_model, ds, split="dev", min_examples=10)
-
-        analyze_model_errors(svm_model, ds, split="dev", min_examples=10)
-
-    if choice is not None:
-        if choice == 1:
-            train_and_evaluate()
-        elif choice == 2:
-            grid_search()
-        elif choice == 3:
-            analyze_errors()
-        return None
-    else:
-        cli_menu(
-            "Select a functionality to showcase:",
-            {
-                "Train and Evaluate Baseline Models": train_and_evaluate,
-                "Perform SVM Grid Search": grid_search,
-                "Analyze Errors on Models": analyze_errors,
-                "Back to Main Menu": lambda: LOGGER.log_and_print(
-                    Panel(
-                        "[bold yellow]Returning to Main Menu...[/bold yellow]"
-                    )
-                ),
-            },
-        )
+from typing import Optional
 
 
 def main():
-    """Run main pipeline."""
+    """Run main program."""
     LOGGER.info("Starting NLP Pipeline...")
 
     if DEBUG:
-        print("=== MAIN FUNCTION STARTED ===")
-        print(f"Current working directory: {os.getcwd()}")
-        print(f"Script arguments: {sys.argv}")
-        print("Loading AG News dataset...")
+        LOGGER.log_and_print("=== MAIN FUNCTION STARTED ===")
+        LOGGER.log_and_print(f"Current working directory: {os.getcwd()}")
+        LOGGER.log_and_print(f"Script arguments: {sys.argv}")
+        LOGGER.log_and_print("Loading AG News dataset...")
 
-    LOGGER.info("Loading AG News dataset...")
-    ds = AGNews(path=DATA_DIR)
-    LOGGER.info("Dataset loaded successfully")
-
-    # Parser for allow running specific functionalities directly from command
-    # line without going through menus.
+    # Set up parser arguments for instantaneous calling.
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "--assignment", type=int, choices=[1], help="Assignment number"
+        "--assignment", type=int, choices=[1, 2], help="Assignment number"
     )
     parser.add_argument(
         "--functionality",
         type=int,
-        choices=[1, 2, 3],
+        choices=[1, 2, 3, 4, 5, 6, 7, 8, 9],
         help="Functionality number",
     )
 
     args = parser.parse_args()
 
+    # Define subfunctions per assignment to call the appropriate showcase
+    # based on the choice. This avoids loading additional modules if not needed
+    # when running specific functionalities directly from the command line.
+    def assignment_1(choice: Optional[int] = None) -> None:
+        """Set up the assignment 1 showcase.
+
+        Args:
+            choice (Optional[int], optional): The functionality to showcase.
+                                              Defaults to None.
+        """
+        from src.showcase.assignment1 import Assignment1Showcase
+
+        if choice not in [1, 2, 3]:
+            Assignment1Showcase()()
+        else:
+            Assignment1Showcase()(choice=choice)
+
+    def assignment_2(choice: Optional[int] = None) -> None:
+        """Set up the assignment 2 showcase.
+
+        Args:
+            choice (Optional[int], optional): The functionality to showcase.
+                                              Defaults to None.
+        """
+        from src.showcase.assignment2 import Assignment2Showcase
+
+        if choice not in [1, 2, 3, 4, 5]:
+            Assignment2Showcase()()
+        else:
+            Assignment2Showcase()(choice=choice)
+
+    def assignment_3(choice: Optional[int] = None) -> None:
+        """Set up the assignment 3 showcase.
+
+        Args:
+            choice (Optional[int], optional): The functionality to showcase.
+                                              Defaults to None.
+        """
+        from src.showcase.assignment3 import Assignment3Showcase
+
+        # TODO: Implement assignment 3.
+        Assignment3Showcase()()
+
     if args.assignment and args.functionality:
         if args.assignment == 1:
-            if args.functionality == 1:
-                assignment1_showcase(ds, choice=1)
-            elif args.functionality == 2:
-                assignment1_showcase(ds, choice=2)
-            elif args.functionality == 3:
-                assignment1_showcase(ds, choice=3)
+            assignment_1(choice=args.functionality)
+        elif args.assignment == 2:
+            assignment_2(choice=args.functionality)
     else:
         panel = Panel("AG News NLP Pipeline", style="bold blue")
+
         LOGGER.log_and_print(panel)
+
         while True:
             cli_menu(
                 "Select an assignment to showcase different functionalities:",
                 {
                     "Assignment 1 - Dataset Showcase & Baseline Models": (
-                        lambda: assignment1_showcase(ds)
+                        assignment_1
+                    ),
+                    "Assignment 2 - CNN & LSTM": (assignment_2),
+                    "Assignment 3 - Transformers (Not Implemented)": (
+                        assignment_3
                     ),
                     "Exit": lambda: exit(0),
                 },

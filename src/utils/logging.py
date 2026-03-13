@@ -27,25 +27,25 @@ class Logger:
         Returns:
             A configured logger instance
         """
-        # Create logs directory
+        # Create logs directory.
         logs_dir = Path(__file__).parent.parent.parent / "logs"
         logs_dir.mkdir(parents=True, exist_ok=True)
 
-        # Create logger
+        # Create logger.
         logger = logging.getLogger(name)
         logger.setLevel(logging.DEBUG)
 
-        # Remove existing handlers to avoid duplicates for UX
+        # Remove existing handlers to avoid duplicates for UX.
         logger.handlers.clear()
         logger.propagate = False
 
-        # Create formatters
+        # Create formatters.
         detailed_formatter = logging.Formatter(
             "%(asctime)s [%(levelname)-8s] %(name)s - %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
         )
 
-        # Main log file with detailed formatting
+        # Main log file with detailed formatting.
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         log_file = logs_dir / f"{timestamp}.log"
         file_handler = logging.FileHandler(log_file)
@@ -61,7 +61,7 @@ class Logger:
         Args:
             rich_object: A rich renderable object.
         """
-        # Capture rich object as text
+        # Capture rich object as text.
         string_io = StringIO()
         temp_console = Console(file=string_io, width=100, legacy_windows=False)
         temp_console.print(rich_object)
@@ -71,7 +71,7 @@ class Logger:
             if line.strip():
                 self._logger.info(line)
 
-        # Print to console
+        # Print to console.
         self.console.print(rich_object)
 
     def __getattr__(self, name):
