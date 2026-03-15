@@ -101,9 +101,11 @@ class Assignment3Showcase:
             batch_size=batch_size,
         )
 
+        # differs from ass2
         trainer.train(
             num_epochs=20,
-            learning_rate=1e-3,
+            learning_rate=2e-5,
+            optimizer=torch.optim.AdamW,
             early_stopping=True,
             patience=3,
         )
