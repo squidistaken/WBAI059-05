@@ -48,7 +48,7 @@ class Assignment3Showcase:
         )
 
     def distilbert(self):
-        output_dir = get_output_path(assignment=2)
+        output_dir = get_output_path(assignment=3)
         model_path = output_dir / "distilbert_model.pt"
 
         if RETRAIN_MODEL or not model_path.exists():
