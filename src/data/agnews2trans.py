@@ -25,6 +25,19 @@ class AGNews2Trans(AGNews, metaclass=SingletonMeta):
     def get_torch_dataset(
         self, split: str, max_length: int = 256
     ) -> TorchDataset:
+        """Get a TorchDataset for a given split.
+
+        Args:
+            split (str): The split.
+            max_length (int, optional): The maximum sequence length. Defaults
+                                        to 256.
+
+        Raises:
+            ValueError: If an invalid split name is used.
+
+        Returns:
+            TorchDataset: A TorchDataset object.
+        """
         if split == "train":
             df = self.train_df
         elif split == "dev":
@@ -39,7 +52,10 @@ class AGNews2Trans(AGNews, metaclass=SingletonMeta):
         texts = df["text"].to_list()
 
         LOGGER.log_and_print(
-            Panel("Preloading DistilBERT Dataset...", style="bold yellow")
+            Panel(
+                f"Preloading DistilBERT Dataset for the {split.capitalize()} Split...",
+                style="bold yellow",
+            )
         )
 
         encodings = self.tokenizer(
@@ -91,6 +107,14 @@ class AGNews2TransDataset(Dataset):
         return len(self.df)
 
     def __getitem__(self, idx: int) -> tuple[Tensor, Tensor]:
+        """Get a single sample from the dataset.
+
+        Args:
+            idx (int): The index of the sample.
+
+        Returns:
+            tuple[Tensor, Tensor]: A tuple `(embedding_tensor, one_hot_label)`.
+        """
         text = self.df["text"][idx]
         label = self.df["label"][idx]
 

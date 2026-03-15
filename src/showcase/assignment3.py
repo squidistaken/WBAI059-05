@@ -15,7 +15,7 @@ from src.training.eval import evaluate_model
 class Assignment3Showcase:
     """Class for assignment 3 showcase."""
 
-    ds = AGNews2Trans()
+    ds = AGNews2Trans(path=DATA_DIR)
 
     # TODO: Implement robustness/slice evaluations.
     def __call__(self, choice: Optional[int] = None) -> None:
@@ -28,10 +28,11 @@ class Assignment3Showcase:
         """
         if choice is not None:
             if choice == 1:
-                ...
+                self.distilbert()
 
             if choice == 2:
-                ...
+                self.analyze_errors()
+
             return
 
         cli_menu(
@@ -47,16 +48,19 @@ class Assignment3Showcase:
             },
         )
 
-    def distilbert(self):
+    def distilbert(self) -> None:
+        """Finetune and evaluate DistilBERT."""
         output_dir = get_output_path(assignment=3)
         model_path = output_dir / "distilbert_model.pt"
 
         if RETRAIN_MODEL or not model_path.exists():
             trainer = self._train_model(model_path=model_path)
             model = trainer.load_model(model_path)
+
         else:
             LOGGER.info(f"Loading LSTM model from {model_path}")
             model = DistilBERTClassifer().to(DEVICE)
+
             model.load_state_dict(
                 torch.load(model_path, map_location=DEVICE, weights_only=True)
             )
@@ -75,18 +79,27 @@ class Assignment3Showcase:
         )
 
     def _train_model(self, model_path: Path) -> Trainer:
+        """Train the DistilBERT model.
+
+        Args:
+            model_path (Path): The path to save the model.
+
+        Returns:
+            Trainer: A trainer containing the trained model.
+        """
         if get_available_vram() > 8.0:
-            ds = AGNews2Trans(path=DATA_DIR)
-            train_data = ds.get_torch_dataset("train")
-            dev_data = ds.get_torch_dataset("dev")
-            test_data = ds.get_torch_dataset("test")
+            train_data = self.ds.get_torch_dataset("train")
+            dev_data = self.ds.get_torch_dataset("dev")
+            test_data = self.ds.get_torch_dataset("test")
             batch_size = 64
+
         else:
             LOGGER.log_and_print(
                 Panel(
                     f"[bold red]Warning: Available VRAM is low ({get_available_vram():.2f} GB). Using (slow) memory efficient preprocessing for training.[/bold red]"
                 )
             )
+
             train_data = AGNews2TransDataset(split="train")
             dev_data = AGNews2TransDataset(split="dev")
             test_data = AGNews2TransDataset(split="test")
@@ -101,7 +114,6 @@ class Assignment3Showcase:
             batch_size=batch_size,
         )
 
-        # differs from ass2
         trainer.train(
             num_epochs=20,
             learning_rate=2e-5,

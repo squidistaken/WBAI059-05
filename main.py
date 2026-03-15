@@ -63,7 +63,6 @@ def main():
         else:
             Assignment2Showcase()(choice=choice)
 
-    # TODO: Implement assignment 3.
     def assignment_3(choice: Optional[int] = None) -> None:
         """Set up the assignment 3 showcase.
 
