@@ -15,7 +15,7 @@ from src.training.eval import evaluate_model
 class Assignment3Showcase:
     """Class for assignment 3 showcase."""
 
-    ds = AGNews2Trans(path=DATA_DIR)
+    ds = AGNews2Trans()
 
     # TODO: Implement robustness/slice evaluations.
     def __call__(self, choice: Optional[int] = None) -> None:
