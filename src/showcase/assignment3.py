@@ -9,7 +9,7 @@ from src.models.distilbert import DistilBERTClassifer
 from src.training.trainer import Trainer
 import torch
 from pathlib import Path
-from src.training.eval import evaluate_model
+from src.training.eval import analyze_model_errors, evaluate_model
 
 
 class Assignment3Showcase:
@@ -28,7 +28,7 @@ class Assignment3Showcase:
         """
         if choice is not None:
             if choice == 1:
-                self.distilbert()
+                self.finetune_distilbert()
 
             if choice == 2:
                 self.analyze_errors()
@@ -38,7 +38,7 @@ class Assignment3Showcase:
         cli_menu(
             "Select a functionality to showcase:",
             {
-                "Finetune and Evaluate DistilBERT": self.distilbert,
+                "Finetune and Evaluate DistilBERT": self.finetune_distilbert,
                 "Analyze Errors": self.analyze_errors,
                 "Back to Main Menu": lambda: LOGGER.log_and_print(
                     Panel(
@@ -48,22 +48,9 @@ class Assignment3Showcase:
             },
         )
 
-    def distilbert(self) -> None:
+    def finetune_distilbert(self) -> None:
         """Finetune and evaluate DistilBERT."""
-        output_dir = get_output_path(assignment=3)
-        model_path = output_dir / "distilbert_model.pt"
-
-        if RETRAIN_MODEL or not model_path.exists():
-            trainer = self._train_model(model_path=model_path)
-            model = trainer.load_model(model_path)
-
-        else:
-            LOGGER.info(f"Loading LSTM model from {model_path}")
-            model = DistilBERTClassifer().to(DEVICE)
-
-            model.load_state_dict(
-                torch.load(model_path, map_location=DEVICE, weights_only=True)
-            )
+        model = self._get_or_finetune_dilstilbert()
 
         cli_menu(
             "Evaluate CNN on which set?",
@@ -77,6 +64,43 @@ class Assignment3Showcase:
                 "Back to Menu": lambda: None,
             },
         )
+
+    def _get_or_finetune_dilstilbert(self) -> DistilBERTClassifer:
+        """Get a finetune DistilBERT model or train a new one if it does not
+        exist.
+
+        Returns:
+            DistilBERTClassifer: The finetuned DistilBERT model.
+        """
+        output_dir = get_output_path(assignment=3)
+        model_path = output_dir / "distilbert_model.pt"
+
+        model = DistilBERTClassifer().to(DEVICE)
+
+        if RETRAIN_MODEL or not model_path.exists():
+            self._train_model(model_path)
+        else:
+            LOGGER.info(f"Loading DistilBERT model from {model_path}")
+
+            try:
+                model.load_state_dict(
+                    torch.load(
+                        model_path, map_location=DEVICE, weights_only=True
+                    )
+                )
+
+            except RuntimeError as e:
+                LOGGER.log_and_print(
+                    Panel(f"[bold red]Error loading model: {e}[/bold red]")
+                )
+                LOGGER.log_and_print(
+                    Panel(f"[bold yellow]Training new model...[/bold yellow]")
+                )
+                self._train_model(model_path)
+
+        model.eval()
+
+        return model
 
     def _train_model(self, model_path: Path) -> Trainer:
         """Train the DistilBERT model.
@@ -129,4 +153,23 @@ class Assignment3Showcase:
 
         return trainer
 
-    def analyze_errors(self): ...
+    def analyze_errors(self) -> None:
+        """Run error analysis on the DistilBERT model."""
+        model = self._get_or_finetune_dilstilbert()
+
+        cli_menu(
+            "Analyze errors for which split?",
+            {
+                "Dev Set": lambda: (
+                    analyze_model_errors(
+                        model, self.ds, split="dev", min_examples=10
+                    ),
+                ),
+                "Test Set": lambda: (
+                    analyze_model_errors(
+                        model, self.ds, split="test", min_examples=10
+                    ),
+                ),
+                "Back to Menu": lambda: None,
+            },
+        )
