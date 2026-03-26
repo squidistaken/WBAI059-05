@@ -83,10 +83,7 @@ class AGNews2TransDataset(Dataset):
 
     def __init__(
         self,
-        model_name: str = "distilbert-base-uncased",
-        path: Union[Path, str, None] = None,
         split: Literal["train", "dev", "test"] = "train",
-        verbose: bool = True,
         max_length: int = 256,
     ) -> None:
         self.ds = AGNews2Trans()
