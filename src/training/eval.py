@@ -6,12 +6,14 @@ from rich.table import Table
 from rich.panel import Panel
 from src.const import DEBUG, LOGGER, DEVICE
 from src.utils.error_analysis_pipeline import ErrorAnalysisPipeline
-from typing import Any
+from typing import Any, Callable
 import torch
 import numpy as np
+from torch.utils.data import Dataset
 
 
-def evaluate_model(model: Any, ds: Any, use_test: bool = False) -> None:
+
+def evaluate_model(model: Any, ds: Any, use_test: bool = False, transform: Callable | None = None) -> None:
     """Evaluate a trained model on the dev set and display results.
 
     Args:
@@ -27,9 +29,9 @@ def evaluate_model(model: Any, ds: Any, use_test: bool = False) -> None:
     if isinstance(model, torch.nn.Module):
         # If the model is from PyTorch, run batched inference for prediction.
         split_key = "test" if use_test else "dev"
-        torch_ds = ds.get_torch_dataset(split_key)
-        y = ds.y_test if use_test else ds.y_dev
-
+        if isinstance(ds, AGNews):
+            torch_ds = ds.get_torch_dataset(split_key, transform_fn=transform) if isinstance(ds, AGNews2Trans) else AGNewsWord2Vec(split_key)
+            y = ds.y_test if use_test else ds.y_dev
         model.eval()
 
         preds = []

@@ -1,4 +1,5 @@
 from src.data.agnews2trans import AGNews2Trans, AGNews2TransDataset
+from src.data.transformed_dataset import TransformedDataset
 from src.const import LOGGER, DEVICE, RETRAIN_MODEL
 from src.utils.output import get_output_path
 from src.utils.ui import cli_menu
@@ -10,6 +11,7 @@ from src.training.trainer import Trainer
 import torch
 from pathlib import Path
 from src.training.eval import analyze_model_errors, evaluate_model
+from src.utils.robustness import keyword_masking
 
 
 class Assignment3Showcase:
@@ -29,8 +31,10 @@ class Assignment3Showcase:
         if choice is not None:
             if choice == 1:
                 self.finetune_distilbert()
-
             if choice == 2:
+                self.robustness_evaluation()
+
+            if choice == 3:
                 self.analyze_errors()
 
             return
@@ -39,6 +43,7 @@ class Assignment3Showcase:
             "Select a functionality to showcase:",
             {
                 "Finetune and Evaluate DistilBERT": self.finetune_distilbert,
+                "Robustness Evaluation" : self.robustness_evaluation,
                 "Analyze Errors": self.analyze_errors,
                 "Back to Main Menu": lambda: LOGGER.log_and_print(
                     Panel(
@@ -47,7 +52,43 @@ class Assignment3Showcase:
                 ),
             },
         )
+        
+    def robustness_evaluation(self) -> None:
+        cli_menu(
+            "Select a robustness evaluation to run:",
+            {
+                "Keyword Masking Evaluation": self.keyword_mask_evaluation,
+                "Back to Menu": lambda: None,
+            },
+        )
 
+    def keyword_mask_evaluation(self) -> None:
+        """Evaluate the robustness of the DistilBERT model through a keyword masking procedure."""
+        model = self._get_or_finetune_dilstilbert()
+
+        kv = self.ds.tokenizer.get_vocab()
+        
+        cli_menu(
+            "Evaluate Keyword Masking on which set?",
+            {
+                "Dev Set": lambda: evaluate_model(model, self.ds, transform=lambda item:  keyword_masking(
+                        item,
+                        kv,
+                    )),
+                "Test Set": lambda: evaluate_model(model, self.ds, transform=lambda item:  keyword_masking(
+                        item,
+                        kv,
+                    )),
+                "Back to Menu": lambda: None,
+            },
+        )
+        
+        
+        
+        
+        
+        
+    
     def finetune_distilbert(self) -> None:
         """Finetune and evaluate DistilBERT."""
         model = self._get_or_finetune_dilstilbert()

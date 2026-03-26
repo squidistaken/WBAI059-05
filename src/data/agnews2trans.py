@@ -2,12 +2,13 @@ from src.data.agnews import AGNews
 from src.utils.singleton import SingletonMeta
 from transformers import DistilBertTokenizerFast
 from src.utils.data import TorchDataset
+from src.data.transformed_dataset import TransformedDataset
 from src.const import LOGGER, HF_TOKEN
 import torch
 import torch.nn.functional as F
 from rich.panel import Panel
 from torch.utils.data import Dataset
-from typing import Union, Literal
+from typing import Callable, Literal
 from pathlib import Path
 from torch import Tensor
 
@@ -23,7 +24,7 @@ class AGNews2Trans(AGNews, metaclass=SingletonMeta):
         )
 
     def get_torch_dataset(
-        self, split: str, max_length: int = 256
+        self, split: str, max_length: int = 256, transform_fn: Callable | None = None
     ) -> TorchDataset:
         """Get a TorchDataset for a given split.
 
@@ -74,7 +75,12 @@ class AGNews2Trans(AGNews, metaclass=SingletonMeta):
             torch.tensor(df["label"].to_numpy() - 1), num_classes=4
         ).float()
 
-        return TorchDataset(X, y)
+        tds = TorchDataset(X, y)
+        
+        if transform_fn is not None:
+            tds = TransformedDataset(tds, transform_fn)
+        
+        return tds
 
 
 class AGNews2TransDataset(Dataset):
