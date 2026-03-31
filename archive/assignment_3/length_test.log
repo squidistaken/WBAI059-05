@@ -1,0 +1,173 @@
+2026-03-31 14:04:39 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:04:39 [INFO    ] nlp_pipeline - │ Starting NLP Pipeline...                                                                         │
+2026-03-31 14:04:39 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:04:39 [INFO    ] nlp_pipeline - Starting NLP Pipeline...
+2026-03-31 14:04:49 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:04:49 [INFO    ] nlp_pipeline - │ Initializing AGNews dataset...                                                                   │
+2026-03-31 14:04:49 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:04:52 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:04:52 [INFO    ] nlp_pipeline - │ Select a robustness evaluation to run:                                                           │
+2026-03-31 14:04:52 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:04:52 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:04:52 [INFO    ] nlp_pipeline - │ 1. Keyword Masking Evaluation                                                                    │
+2026-03-31 14:04:52 [INFO    ] nlp_pipeline - │ 2. Length Bucket Evaluation                                                                      │
+2026-03-31 14:04:52 [INFO    ] nlp_pipeline - │ 3. Back to Menu                                                                                  │
+2026-03-31 14:04:52 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:05:57 [INFO    ] nlp_pipeline - Loading DistilBERT model from /home4/s5195179/natural-language-processing/models/assignment_3/distilbert_model.pt
+2026-03-31 14:05:58 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:05:58 [INFO    ] nlp_pipeline - │ Evaluate Length Buckets on which set?                                                            │
+2026-03-31 14:05:58 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:05:58 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:05:58 [INFO    ] nlp_pipeline - │ 1. Dev Set                                                                                       │
+2026-03-31 14:05:58 [INFO    ] nlp_pipeline - │ 2. Test Set                                                                                      │
+2026-03-31 14:05:58 [INFO    ] nlp_pipeline - │ 3. Back to Menu                                                                                  │
+2026-03-31 14:05:58 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:05:59 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:05:59 [INFO    ] nlp_pipeline - │ Preloading DistilBERT Dataset for the Test Split...                                              │
+2026-03-31 14:05:59 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:06:01 [DEBUG   ] nlp_pipeline - Input IDs shape: torch.Size([7600, 256, 2]), Lengths: tensor([32, 77, 55,  ..., 33, 69, 38]), Bucket Size: 50
+2026-03-31 14:06:01 [DEBUG   ] nlp_pipeline - Bucket 0-50: Mask Sum: 3806, Mask Shape: torch.Size([7600])
+2026-03-31 14:06:01 [DEBUG   ] nlp_pipeline - Bucket 50-100: Mask Sum: 3612, Mask Shape: torch.Size([7600])
+2026-03-31 14:06:01 [DEBUG   ] nlp_pipeline - Bucket 100-150: Mask Sum: 148, Mask Shape: torch.Size([7600])
+2026-03-31 14:06:01 [DEBUG   ] nlp_pipeline - Bucket 150-200: Mask Sum: 26, Mask Shape: torch.Size([7600])
+2026-03-31 14:06:01 [DEBUG   ] nlp_pipeline - Bucket 200-250: Mask Sum: 6, Mask Shape: torch.Size([7600])
+2026-03-31 14:06:01 [DEBUG   ] nlp_pipeline - Bucket 250-300: Mask Sum: 2, Mask Shape: torch.Size([7600])
+2026-03-31 14:06:01 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:06:01 [INFO    ] nlp_pipeline - │ Evaluating on Length Bucket: 0-50 with 3806 samples.                                             │
+2026-03-31 14:06:01 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:06:01 [DEBUG   ] nlp_pipeline - Bucket 0-50 has 3806 examples.
+2026-03-31 14:06:01 [INFO    ] nlp_pipeline - Evaluating DistilBERTClassifer on Test set
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - │ DistilBERTClassifer Results on Test Set                                                          │
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - Evaluation Metrics       
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - ┃ Metric              ┃ Value  ┃
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - ┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - │ Accuracy            │ 0.9364 │
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - │ F1 Score (weighted) │ 0.9362 │
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - └─────────────────────┴────────┘
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - Confusion Matrix (with Class Names)             
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - ┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - ┃ Predicted \ Actual ┃ World ┃ Sports ┃ Business ┃ Sci/Tech ┃
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - ┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - │ World              │ 874   │ 8      │ 25       │ 29       │
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - │ Sports             │ 5     │ 1005   │ 3        │ 2        │
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - │ Business           │ 25    │ 4      │ 755      │ 89       │
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - │ Sci/Tech           │ 14    │ 6      │ 32       │ 930      │
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - └────────────────────┴───────┴────────┴──────────┴──────────┘
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - │ Evaluating on Length Bucket: 50-100 with 3612 samples.                                           │
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:06:11 [DEBUG   ] nlp_pipeline - Bucket 50-100 has 3612 examples.
+2026-03-31 14:06:11 [INFO    ] nlp_pipeline - Evaluating DistilBERTClassifer on Test set
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ DistilBERTClassifer Results on Test Set                                                          │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - Evaluation Metrics       
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┃ Metric              ┃ Value  ┃
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Accuracy            │ 0.9477 │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ F1 Score (weighted) │ 0.9477 │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - └─────────────────────┴────────┘
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - Confusion Matrix (with Class Names)             
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┃ Predicted \ Actual ┃ World ┃ Sports ┃ Business ┃ Sci/Tech ┃
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ World              │ 911   │ 2      │ 21       │ 19       │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Sports             │ 4     │ 868    │ 3        │ 2        │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Business           │ 21    │ 5      │ 855      │ 61       │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Sci/Tech           │ 11    │ 3      │ 37       │ 789      │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - └────────────────────┴───────┴────────┴──────────┴──────────┘
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Evaluating on Length Bucket: 100-150 with 148 samples.                                           │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:06:20 [DEBUG   ] nlp_pipeline - Bucket 100-150 has 148 examples.
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - Evaluating DistilBERTClassifer on Test set
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ DistilBERTClassifer Results on Test Set                                                          │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - Evaluation Metrics       
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┃ Metric              ┃ Value  ┃
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Accuracy            │ 0.9595 │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ F1 Score (weighted) │ 0.9596 │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - └─────────────────────┴────────┘
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - Confusion Matrix (with Class Names)             
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┃ Predicted \ Actual ┃ World ┃ Sports ┃ Business ┃ Sci/Tech ┃
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ World              │ 10    │ 0      │ 0        │ 1        │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Sports             │ 0     │ 7      │ 0        │ 0        │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Business           │ 1     │ 1      │ 68       │ 1        │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Sci/Tech           │ 0     │ 0      │ 2        │ 57       │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - └────────────────────┴───────┴────────┴──────────┴──────────┘
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Evaluating on Length Bucket: 150-200 with 26 samples.                                            │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:06:20 [DEBUG   ] nlp_pipeline - Bucket 150-200 has 26 examples.
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - Evaluating DistilBERTClassifer on Test set
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ DistilBERTClassifer Results on Test Set                                                          │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - Evaluation Metrics       
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┃ Metric              ┃ Value  ┃
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Accuracy            │ 0.9615 │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ F1 Score (weighted) │ 0.9615 │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - └─────────────────────┴────────┘
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - Confusion Matrix (with Class Names)        
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━━┓
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┃ Predicted \ Actual ┃ World ┃ Sports ┃ Business ┃
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━━┩
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ World              │ 1     │ 0      │ 0        │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Sports             │ 0     │ 12     │ 1        │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Business           │ 0     │ 0      │ 12       │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - └────────────────────┴───────┴────────┴──────────┘
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Evaluating on Length Bucket: 200-250 with 6 samples.                                             │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:06:20 [DEBUG   ] nlp_pipeline - Bucket 200-250 has 6 examples.
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - Evaluating DistilBERTClassifer on Test set
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ DistilBERTClassifer Results on Test Set                                                          │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - Evaluation Metrics       
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┃ Metric              ┃ Value  ┃
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Accuracy            │ 1.0000 │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ F1 Score (weighted) │ 1.0000 │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - └─────────────────────┴────────┘
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - Confusion Matrix (with Class Names)  
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━┓
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┃ Predicted \ Actual ┃ World ┃ Sports ┃
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━┩
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ World              │ 1     │ 0      │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Sports             │ 0     │ 5      │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - └────────────────────┴───────┴────────┘
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Evaluating on Length Bucket: 250-300 with 2 samples.                                             │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:06:20 [DEBUG   ] nlp_pipeline - Bucket 250-300 has 2 examples.
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - Evaluating DistilBERTClassifer on Test set
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ DistilBERTClassifer Results on Test Set                                                          │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - Evaluation Metrics       
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┃ Metric              ┃ Value  ┃
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ Accuracy            │ 1.0000 │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ F1 Score (weighted) │ 1.0000 │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - └─────────────────────┴────────┘
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - Confusion Matrix (with Class 
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline -             Names)            
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┓
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┃ Predicted \ Actual ┃ World ┃
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - ┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━┩
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - │ World              │ 2     │
+2026-03-31 14:06:20 [INFO    ] nlp_pipeline - └────────────────────┴───────┘
