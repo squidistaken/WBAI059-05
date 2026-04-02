@@ -10,11 +10,14 @@ from src.utils.error_analysis_pipeline import ErrorAnalysisPipeline
 from typing import Any, Callable
 import torch
 import numpy as np
-from torch.utils.data import Dataset
 
 
-
-def evaluate_model(model: Any, ds: Any, use_test: bool = False, transform: Callable | None = None) -> None:
+def evaluate_model(
+    model: Any,
+    ds: Any,
+    use_test: bool = False,
+    transform: Callable | None = None,
+) -> None:
     """Evaluate a trained model on the dev set and display results.
 
     Args:
@@ -31,17 +34,21 @@ def evaluate_model(model: Any, ds: Any, use_test: bool = False, transform: Calla
         # If the model is from PyTorch, run batched inference for prediction.
         split_key = "test" if use_test else "dev"
         if isinstance(ds, AGNews):
-            torch_ds = ds.get_torch_dataset(split_key, transform_fn=transform) if isinstance(ds, AGNews2Trans) else AGNewsWord2Vec(split_key)
+            torch_ds = (
+                ds.get_torch_dataset(split_key, transform_fn=transform)
+                if isinstance(ds, AGNews2Trans)
+                else AGNewsWord2Vec(split_key)
+            )
             y = ds.y_test if use_test else ds.y_dev
         if isinstance(ds, TorchDataset):
             torch_ds = ds
             # Check if labels have correct shape
-            if len(ds.y.shape) > 1 and ds.y.shape[1] > 1: # one-hot encoded
-                y = torch.argmax(ds.y, dim=1).cpu().numpy() + 1 # Convert to class indices (assuming classes are 1-indexed)
+            if len(ds.y.shape) > 1 and ds.y.shape[1] > 1:  # one-hot encoded
+                y = (
+                    torch.argmax(ds.y, dim=1).cpu().numpy() + 1
+                )  # Convert to class indices (assuming classes are 1-indexed)
             else:
                 y = ds.y.cpu().numpy()
-                
-            
 
         preds = []
 
@@ -70,7 +77,9 @@ def evaluate_model(model: Any, ds: Any, use_test: bool = False, transform: Calla
     LOGGER.log_and_print(panel)
 
     if DEBUG:
-        print(y_pred.shape, y.shape, X.shape)
+        LOGGER.debug(
+            f"Predictions shape: {y_pred.shape}, Labels shape: {y.shape}, Features shape: {X.shape}"
+        )
 
     table = Table(title="Evaluation Metrics")
 
@@ -83,12 +92,12 @@ def evaluate_model(model: Any, ds: Any, use_test: bool = False, transform: Calla
     cm = confusion_matrix(y, y_pred)
 
     # Make Confusion Matrix readable by mapping label indices to class names.
-    
     if hasattr(ds, "label_mapping"):
         label_mapping = ds.label_mapping
-    else: # Use default mapping if not provided
+    else:
+        # Use default mapping if not provided.
         label_mapping = {1: "World", 2: "Sports", 3: "Business", 4: "Sci/Tech"}
-        
+
     cm_table = Table(title="Confusion Matrix (with Class Names)")
 
     cm_table.add_column("Predicted \\ Actual", style="bold white")

@@ -12,10 +12,10 @@ def main():
     LOGGER.info("Starting NLP Pipeline...")
 
     if DEBUG:
-        LOGGER.log_and_print("=== MAIN FUNCTION STARTED ===")
-        LOGGER.log_and_print(f"Current working directory: {os.getcwd()}")
-        LOGGER.log_and_print(f"Script arguments: {sys.argv}")
-        LOGGER.log_and_print("Loading AG News dataset...")
+        LOGGER.debug("=== MAIN FUNCTION STARTED ===")
+        LOGGER.debug(f"Current working directory: {os.getcwd()}")
+        LOGGER.debug(f"Script arguments: {sys.argv}")
+        LOGGER.debug("Loading AG News dataset...")
 
     # Set up parser arguments for instantaneous calling.
     parser = argparse.ArgumentParser()
@@ -46,6 +46,7 @@ def main():
 
         if choice not in [1, 2, 3]:
             Assignment1Showcase()()
+
         else:
             Assignment1Showcase()(choice=choice)
 
@@ -60,6 +61,7 @@ def main():
 
         if choice not in [1, 2, 3, 4, 5]:
             Assignment2Showcase()()
+
         else:
             Assignment2Showcase()(choice=choice)
 
@@ -72,10 +74,11 @@ def main():
         """
         from src.showcase.assignment3 import Assignment3Showcase
 
-        if choice not in [1, 2]:
+        if choice not in [1, 2, 3]:
             Assignment3Showcase()()
 
-        Assignment3Showcase()(choice=choice)
+        else:
+            Assignment3Showcase()(choice=choice)
 
     if args.assignment and args.functionality:
         if args.assignment == 1:

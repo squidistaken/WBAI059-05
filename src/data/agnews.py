@@ -32,9 +32,7 @@ class AGNews:
 
         if len(list(self.path.glob("*.csv"))) < 3:
             if DEBUG:
-                LOGGER.log_and_print(
-                    "CSV files not found, downloading dataset..."
-                )
+                LOGGER.debug("CSV files not found, downloading dataset...")
 
             download_ag_news()
 
@@ -71,9 +69,7 @@ class AGNews:
         self.y_test = self.test_df["label"].to_numpy()
 
         if DEBUG:
-            LOGGER.log_and_print(
-                f"Sample of loaded data:\n {self.train_df.head()}"
-            )
+            LOGGER.debug(f"Sample of loaded data:\n {self.train_df.head()}")
 
     def _vectorize(self, max_features=5000) -> None:
         """Vectorize the text data using TF-IDF.
@@ -92,13 +88,13 @@ class AGNews:
         self.X_test = self.vectorizer.transform(self.test_df["text"].to_list())
 
         if DEBUG:
-            LOGGER.log_and_print("=== VECTORIZED DATA SAMPLE ===")
-            LOGGER.log_and_print(f"X_train shape: {self.X_train.shape}")
-            LOGGER.log_and_print(f"y_train shape: {self.y_train.shape}")
-            LOGGER.log_and_print(f"X_dev shape {self.X_dev.shape}")
-            LOGGER.log_and_print(f"y_dev shape: {self.y_dev.shape}")
-            LOGGER.log_and_print(f"X_test shape: {self.X_test.shape}")
-            LOGGER.log_and_print(f"y_test shape: {self.y_test.shape}")
+            LOGGER.debug("=== VECTORIZED DATA SAMPLE ===")
+            LOGGER.debug(f"X_train shape: {self.X_train.shape}")
+            LOGGER.debug(f"y_train shape: {self.y_train.shape}")
+            LOGGER.debug(f"X_dev shape {self.X_dev.shape}")
+            LOGGER.debug(f"y_dev shape: {self.y_dev.shape}")
+            LOGGER.debug(f"X_test shape: {self.X_test.shape}")
+            LOGGER.debug(f"y_test shape: {self.y_test.shape}")
 
     def _normalize(self) -> None:
         """Normalise the data."""

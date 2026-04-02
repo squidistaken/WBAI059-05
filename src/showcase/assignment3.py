@@ -23,7 +23,6 @@ class Assignment3Showcase:
     def __call__(self, choice: Optional[int] = None) -> None:
         """Call the showcase.
 
-
         Args:
             choice (Optional[int], optional): The functionality to showcase.
                                               Defaults to None.
@@ -31,10 +30,11 @@ class Assignment3Showcase:
         if choice is not None:
             if choice == 1:
                 self.finetune_distilbert()
-            if choice == 2:
+
+            elif choice == 2:
                 self.robustness_evaluation()
 
-            if choice == 3:
+            elif choice == 3:
                 self.analyze_errors()
 
             return
@@ -43,7 +43,7 @@ class Assignment3Showcase:
             "Select a functionality to showcase:",
             {
                 "Finetune and Evaluate DistilBERT": self.finetune_distilbert,
-                "Robustness Evaluation" : self.robustness_evaluation,
+                "Robustness Evaluation": self.robustness_evaluation,
                 "Analyze Errors": self.analyze_errors,
                 "Back to Main Menu": lambda: LOGGER.log_and_print(
                     Panel(
@@ -52,7 +52,7 @@ class Assignment3Showcase:
                 ),
             },
         )
-        
+
     def robustness_evaluation(self) -> None:
         cli_menu(
             "Select a robustness evaluation to run:",
@@ -68,44 +68,57 @@ class Assignment3Showcase:
         model = self._get_or_finetune_dilstilbert()
 
         kv = self.ds.tokenizer.get_vocab()
-        
-        LOGGER.log_and_print(Panel(
-            "Evaluating Keyword Masking Procedure...",
-            style="bold blue"
-        ))
-        
+
+        LOGGER.log_and_print(
+            Panel("Evaluating Keyword Masking Procedure...", style="bold blue")
+        )
+
         cli_menu(
             "Evaluate Keyword Masking on which set?",
             {
-                "Dev Set": lambda: evaluate_model(model, self.ds, transform=lambda item:  keyword_masking(
+                "Dev Set": lambda: evaluate_model(
+                    model,
+                    self.ds,
+                    transform=lambda item: keyword_masking(
                         item,
                         kv,
-                    )),
-                "Test Set": lambda: evaluate_model(model, self.ds, transform=lambda item:  keyword_masking(
+                    ),
+                ),
+                "Test Set": lambda: evaluate_model(
+                    model,
+                    self.ds,
+                    transform=lambda item: keyword_masking(
                         item,
                         kv,
-                    ), use_test=True),
+                    ),
+                    use_test=True,
+                ),
                 "Back to Menu": lambda: None,
             },
         )
-        
-    
+
     def length_bucket_evaluation(self) -> None:
         """Evaluate the robustness of the DistilBERT model through a length bucket evaluation."""
         model = self._get_or_finetune_dilstilbert()
 
         def _length_bucket_eval(split: str) -> None:
             torch_ds = self.ds.get_torch_dataset(split, transform_fn=None)
-            buckets = split_length_buckets(torch_ds.X, torch_ds.y, bucket_size=50)
+            buckets = split_length_buckets(
+                torch_ds.X, torch_ds.y, bucket_size=50
+            )
 
             for bucket_name, bucket_data in buckets.items():
                 LOGGER.log_and_print(
-                    Panel(f"Evaluating on Length Bucket: {bucket_name} with {len(bucket_data)} samples.", style="bold blue")
+                    Panel(
+                        f"Evaluating on Length Bucket: {bucket_name} with {len(bucket_data)} samples.",
+                        style="bold blue",
+                    )
                 )
-                LOGGER.debug(f"Bucket {bucket_name} has {len(bucket_data)} examples.")
-                evaluate_model(model, bucket_data, use_test=(split=="test"))
-        
-        
+                LOGGER.debug(
+                    f"Bucket {bucket_name} has {len(bucket_data)} examples."
+                )
+                evaluate_model(model, bucket_data, use_test=(split == "test"))
+
         cli_menu(
             "Evaluate Length Buckets on which set?",
             {
@@ -114,10 +127,7 @@ class Assignment3Showcase:
                 "Back to Menu": lambda: None,
             },
         )
-        
-        
-        
-    
+
     def finetune_distilbert(self) -> None:
         """Finetune and evaluate DistilBERT."""
         model = self._get_or_finetune_dilstilbert()
@@ -243,4 +253,3 @@ class Assignment3Showcase:
                 "Back to Menu": lambda: None,
             },
         )
-

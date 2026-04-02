@@ -22,7 +22,6 @@ class Assignment2Showcase:
     def __call__(self, choice: Optional[int] = None) -> None:
         """Call the showcase.
 
-
         Args:
             choice (Optional[int], optional): The functionality to showcase.
                                               Defaults to None.

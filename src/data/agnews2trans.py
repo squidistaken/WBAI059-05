@@ -9,7 +9,6 @@ import torch.nn.functional as F
 from rich.panel import Panel
 from torch.utils.data import Dataset
 from typing import Callable, Literal
-from pathlib import Path
 from torch import Tensor
 
 
@@ -24,7 +23,10 @@ class AGNews2Trans(AGNews, metaclass=SingletonMeta):
         )
 
     def get_torch_dataset(
-        self, split: str, max_length: int = 256, transform_fn: Callable | None = None
+        self,
+        split: str,
+        max_length: int = 256,
+        transform_fn: Callable | None = None,
     ) -> TorchDataset:
         """Get a TorchDataset for a given split.
 
@@ -76,10 +78,10 @@ class AGNews2Trans(AGNews, metaclass=SingletonMeta):
         ).float()
 
         tds = TorchDataset(X, y)
-        
+
         if transform_fn is not None:
             tds = TransformedDataset(tds, transform_fn)
-        
+
         return tds
 
 

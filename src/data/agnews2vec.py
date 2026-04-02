@@ -44,7 +44,7 @@ class AGNewsWord2Vec(AGNews, metaclass=SingletonMeta):
 
         if len(list(self.path.glob("*.csv"))) < 3:
             if DEBUG:
-                LOGGER.info("CSV files not found, downloading dataset...")
+                LOGGER.debug("CSV files not found, downloading dataset...")
 
             download_ag_news()
 
