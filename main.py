@@ -12,16 +12,16 @@ def main():
     LOGGER.info("Starting NLP Pipeline...")
 
     if DEBUG:
-        LOGGER.log_and_print("=== MAIN FUNCTION STARTED ===")
-        LOGGER.log_and_print(f"Current working directory: {os.getcwd()}")
-        LOGGER.log_and_print(f"Script arguments: {sys.argv}")
-        LOGGER.log_and_print("Loading AG News dataset...")
+        LOGGER.debug("=== MAIN FUNCTION STARTED ===")
+        LOGGER.debug(f"Current working directory: {os.getcwd()}")
+        LOGGER.debug(f"Script arguments: {sys.argv}")
+        LOGGER.debug("Loading AG News dataset...")
 
     # Set up parser arguments for instantaneous calling.
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "--assignment", type=int, choices=[1, 2], help="Assignment number"
+        "--assignment", type=int, choices=[1, 2, 3], help="Assignment number"
     )
     parser.add_argument(
         "--functionality",
@@ -46,6 +46,7 @@ def main():
 
         if choice not in [1, 2, 3]:
             Assignment1Showcase()()
+
         else:
             Assignment1Showcase()(choice=choice)
 
@@ -60,6 +61,7 @@ def main():
 
         if choice not in [1, 2, 3, 4, 5]:
             Assignment2Showcase()()
+
         else:
             Assignment2Showcase()(choice=choice)
 
@@ -72,14 +74,19 @@ def main():
         """
         from src.showcase.assignment3 import Assignment3Showcase
 
-        # TODO: Implement assignment 3.
-        Assignment3Showcase()()
+        if choice not in [1, 2, 3]:
+            Assignment3Showcase()()
+
+        else:
+            Assignment3Showcase()(choice=choice)
 
     if args.assignment and args.functionality:
         if args.assignment == 1:
             assignment_1(choice=args.functionality)
         elif args.assignment == 2:
             assignment_2(choice=args.functionality)
+        elif args.assignment == 3:
+            assignment_3(choice=args.functionality)
     else:
         panel = Panel("AG News NLP Pipeline", style="bold blue")
 
@@ -93,9 +100,7 @@ def main():
                         assignment_1
                     ),
                     "Assignment 2 - CNN & LSTM": (assignment_2),
-                    "Assignment 3 - Transformers (Not Implemented)": (
-                        assignment_3
-                    ),
+                    "Assignment 3 - Transformers": (assignment_3),
                     "Exit": lambda: exit(0),
                 },
             )
@@ -103,5 +108,6 @@ def main():
 
 if __name__ == "__main__":
     panel = Panel("Starting NLP Pipeline...", style="bold green")
+
     LOGGER.log_and_print(panel)
     main()

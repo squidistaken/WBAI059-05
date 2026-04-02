@@ -1,0 +1,88 @@
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Starting NLP Pipeline...                                                     │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Initializing AGNews dataset...                                               │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Preloading DistilBERT Dataset for the Train Split...                         │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Preloading DistilBERT Dataset for the Dev Split...                           │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Preloading DistilBERT Dataset for the Test Split...                          │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Training Batches ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:08:14
+
+Epoch 1/20, Train Loss: 0.2352, Eval Loss: 0.2636
+Training Batches ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:08:13
+
+Epoch 2/20, Train Loss: 0.1410, Eval Loss: 0.2690
+Training Batches ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:08:13
+
+Epoch 3/20, Train Loss: 0.1011, Eval Loss: 0.2356
+Training Batches ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:08:13
+
+Epoch 4/20, Train Loss: 0.0695, Eval Loss: 0.2955
+Training Batches ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:08:13
+
+Epoch 5/20, Train Loss: 0.0478, Eval Loss: 0.3328
+Training Batches ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:08:13
+
+Epoch 6/20, Train Loss: 0.0331, Eval Loss: 0.3674
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Early stopping triggered after 4 epochs without improvement!                 │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Training Epochs ━━━━━━━━━━                                25% -:--:--
+Restored the best model weights from early stopping.
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Evaluate CNN on which set?                                                   │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ 1. Dev Set                                                                   │
+│ 2. Test Set                                                                  │
+│ 3. Back to Menu                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+Enter your choice: 
+###############################################################################
+Hábrók Cluster
+Job 27929536 for user s5343798
+Finished at: Tue Mar 17 15:28:04 CET 2026
+
+Job details:
+============
+
+Job ID                         : 27929536
+Name                           : nlp-finetuning
+User                           : s5343798
+Partition                      : gpumedium
+Nodes                          : a100gpu5
+Number of Nodes                : 1
+Cores                          : 4
+Number of Tasks                : 1
+State                          : FAILED  
+Submit                         : 2026-03-17T14:34:49
+Start                          : 2026-03-17T14:35:53
+End                            : 2026-03-17T15:28:00
+Reserved walltime              : 08:00:00
+Used walltime                  : 00:52:07
+Used CPU time                  : 00:52:28 (Efficiency: 25.17%)
+% User (Computation)           : 99.71%
+% System (I/O)                 :  0.29%
+Total memory reserved          : 16G
+Maximum memory used            : 5.73G
+Requested GPUs                 : a100=1
+Allocated GPUs                 : a100=1
+Max GPU utilization            : 100%
+Max GPU memory used            : 6.88G
+
+Acknowledgements:
+=================
+
+Please see this page for information about acknowledging Hábrók in your publications:
+
+https://wiki.hpc.rug.nl/habrok/introduction/scientific_output
+
+################################################################################

@@ -1,0 +1,41 @@
+2026-03-17 14:36:04 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-17 14:36:04 [INFO    ] nlp_pipeline - │ Starting NLP Pipeline...                                                                         │
+2026-03-17 14:36:04 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-17 14:36:04 [INFO    ] nlp_pipeline - Starting NLP Pipeline...
+2026-03-17 14:36:18 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-17 14:36:18 [INFO    ] nlp_pipeline - │ Initializing AGNews dataset...                                                                   │
+2026-03-17 14:36:18 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-17 14:36:21 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-17 14:36:21 [INFO    ] nlp_pipeline - │ Preloading DistilBERT Dataset for the Train Split...                                             │
+2026-03-17 14:36:21 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-17 14:36:40 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-17 14:36:40 [INFO    ] nlp_pipeline - │ Preloading DistilBERT Dataset for the Dev Split...                                               │
+2026-03-17 14:36:40 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-17 14:36:42 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-17 14:36:42 [INFO    ] nlp_pipeline - │ Preloading DistilBERT Dataset for the Test Split...                                              │
+2026-03-17 14:36:42 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-17 14:45:17 [INFO    ] nlp_pipeline - Epoch 1/20, Train Loss: 0.2352, Eval Loss: 0.2636
+2026-03-17 14:53:49 [INFO    ] nlp_pipeline - Epoch 2/20, Train Loss: 0.1410, Eval Loss: 0.2690
+2026-03-17 14:53:49 [INFO    ] nlp_pipeline - No improvement in validation loss for 1 epochs.
+2026-03-17 15:02:21 [INFO    ] nlp_pipeline - Epoch 3/20, Train Loss: 0.1011, Eval Loss: 0.2356
+2026-03-17 15:10:53 [INFO    ] nlp_pipeline - Epoch 4/20, Train Loss: 0.0695, Eval Loss: 0.2955
+2026-03-17 15:10:53 [INFO    ] nlp_pipeline - No improvement in validation loss for 1 epochs.
+2026-03-17 15:19:24 [INFO    ] nlp_pipeline - Epoch 5/20, Train Loss: 0.0478, Eval Loss: 0.3328
+2026-03-17 15:19:24 [INFO    ] nlp_pipeline - No improvement in validation loss for 2 epochs.
+2026-03-17 15:27:56 [INFO    ] nlp_pipeline - Epoch 6/20, Train Loss: 0.0331, Eval Loss: 0.3674
+2026-03-17 15:27:56 [INFO    ] nlp_pipeline - No improvement in validation loss for 3 epochs.
+2026-03-17 15:27:56 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-17 15:27:56 [INFO    ] nlp_pipeline - │ Early stopping triggered after 4 epochs without improvement!                                     │
+2026-03-17 15:27:56 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-17 15:27:56 [INFO    ] nlp_pipeline - Restored the best model weights from early stopping.
+2026-03-17 15:27:56 [INFO    ] nlp_pipeline - Training history plot saved to /home5/s5343798/natural-language-processing/models/assignment_3/distilbert_training_history.png
+2026-03-17 15:27:57 [INFO    ] nlp_pipeline - Model saved to /home5/s5343798/natural-language-processing/models/assignment_3/distilbert_model.pt
+2026-03-17 15:27:57 [INFO    ] nlp_pipeline - Model loaded from /home5/s5343798/natural-language-processing/models/assignment_3/distilbert_model.pt
+2026-03-17 15:27:57 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-17 15:27:57 [INFO    ] nlp_pipeline - │ Evaluate CNN on which set?                                                                       │
+2026-03-17 15:27:57 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-03-17 15:27:57 [INFO    ] nlp_pipeline - ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+2026-03-17 15:27:57 [INFO    ] nlp_pipeline - │ 1. Dev Set                                                                                       │
+2026-03-17 15:27:57 [INFO    ] nlp_pipeline - │ 2. Test Set                                                                                      │
+2026-03-17 15:27:57 [INFO    ] nlp_pipeline - │ 3. Back to Menu                                                                                  │
+2026-03-17 15:27:57 [INFO    ] nlp_pipeline - ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯

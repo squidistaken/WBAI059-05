@@ -1,7 +1,7 @@
 import pickle as pkl
 from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
-from src.data.data import AGNews
+from src.data.agnews import AGNews
 from datetime import datetime
 from src.const import DEBUG, MODEL_DIR, RANDOM_SEED, LOGGER
 from src.utils.output import get_output_path

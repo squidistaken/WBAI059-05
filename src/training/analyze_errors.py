@@ -5,7 +5,6 @@ from rich.table import Table
 from rich.panel import Panel
 import textwrap
 from src.const import LOGGER, DEVICE
-from src.data.data import AGNews, AGNewsWord2Vec
 import torch
 
 
@@ -15,7 +14,7 @@ class ErrorAnalyzer:
     def __init__(
         self,
         model: Any,
-        ds: AGNews | AGNewsWord2Vec,
+        ds: Any,
         min_examples: int = 10,
         show_full_text: bool = False,
         wrap_width: int = 80,

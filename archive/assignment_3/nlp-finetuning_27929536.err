@@ -1,0 +1,41 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) 2023.01   2) StdEnv
+Resolved 116 packages in 8ms
+Audited 99 packages in 103ms
+Loading weights:   0%|          | 0/100 [00:00<?, ?it/s]Loading weights: 100%|██████████| 100/100 [00:00<00:00, 1841.35it/s]
+[1mDistilBertForSequenceClassification LOAD REPORT[0m from: distilbert-base-uncased
+Key                     | Status     | 
+------------------------+------------+-
+vocab_layer_norm.weight | UNEXPECTED | 
+vocab_layer_norm.bias   | UNEXPECTED | 
+vocab_transform.weight  | UNEXPECTED | 
+vocab_projector.bias    | UNEXPECTED | 
+vocab_transform.bias    | UNEXPECTED | 
+pre_classifier.bias     | MISSING    | 
+classifier.weight       | MISSING    | 
+classifier.bias         | MISSING    | 
+pre_classifier.weight   | MISSING    | 
+
+[3mNotes:
+- UNEXPECTED[3m	:can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING[3m	:those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.[0m
+Traceback (most recent call last):
+  File "/home5/s5343798/natural-language-processing/main.py", line 110, in <module>
+    main()
+  File "/home5/s5343798/natural-language-processing/main.py", line 86, in main
+    assignment_3(choice=args.functionality)
+  File "/home5/s5343798/natural-language-processing/main.py", line 78, in assignment_3
+    Assignment3Showcase()(choice=choice)
+  File "/home5/s5343798/natural-language-processing/src/showcase/assignment3.py", line 31, in __call__
+    self.distilbert()
+  File "/home5/s5343798/natural-language-processing/src/showcase/assignment3.py", line 68, in distilbert
+    cli_menu(
+  File "/home5/s5343798/natural-language-processing/src/utils/ui.py", line 26, in cli_menu
+    choice = CONSOLE.input(
+             ^^^^^^^^^^^^^^
+  File "/home5/s5343798/natural-language-processing/.venv/lib64/python3.12/site-packages/rich/console.py", line 2174, in input
+    result = input()
+             ^^^^^^^
+EOFError: EOF when reading a line

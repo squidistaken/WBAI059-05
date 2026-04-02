@@ -5,3 +5,4 @@ paths:
 random_seed: 33
 debug: False
 retrain_model: False
+hf_token: null

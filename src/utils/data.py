@@ -1,7 +1,6 @@
 from torch.utils.data import Dataset
 from torch import as_tensor, Tensor
 from typing import Any
-
 from src.const import DEVICE
 from torch import cuda
 

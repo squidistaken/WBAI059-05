@@ -1,5 +1,5 @@
 from sklearn.base import BaseEstimator
-from src.data.data import AGNews
+from src.data.agnews import AGNews
 from src.utils.output import get_output_path
 from src.const import LOGGER
 import pickle

@@ -1,4 +1,4 @@
-from src.data.data import AGNewsWord2Vec, AGNewsWord2VecDataset
+from src.data.agnews2vec import AGNewsWord2Vec, AGNewsWord2VecDataset
 from src.models.cnn import CNNClassifier
 from src.models.lstm import LSTMClassifier
 from src.training.trainer import Trainer
@@ -21,7 +21,6 @@ class Assignment2Showcase:
 
     def __call__(self, choice: Optional[int] = None) -> None:
         """Call the showcase.
-
 
         Args:
             choice (Optional[int], optional): The functionality to showcase.
@@ -52,7 +51,7 @@ class Assignment2Showcase:
                 "Train and Evaluate CNN Model": self.train_and_evaluate_cnn,
                 "Train and Evaluate LSTM Model": self.train_and_evaluate_lstm,
                 "Analyze Errors": self.analyze_errors,
-                "Ablation Study on Sequence Length (Only CNN for Now)": lambda: self.ablation_study(
+                "Ablation Study on Sequence Length": lambda: self.ablation_study(
                     "max_sequence_length"
                 ),
                 "Back to Main Menu": lambda: LOGGER.log_and_print(

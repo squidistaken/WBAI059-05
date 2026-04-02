@@ -1,6 +1,5 @@
 from src.const import CONSOLE
 from src.training.analyze_errors import ErrorAnalyzer
-from src.data.data import AGNews
 from typing import Any
 
 
@@ -14,7 +13,7 @@ class ErrorAnalysisPipeline:
     def run(
         self,
         model: Any,
-        ds: AGNews,
+        ds: Any,
         split: str = "dev",
         min_examples: int = 10,
         wrap_width: int = 80,
@@ -24,7 +23,7 @@ class ErrorAnalysisPipeline:
 
         Args:
             model (Any): The trained model to analyze.
-            ds (AGNews): The AGNews dataset object.
+            ds (Any): The dataset object.
             split (str, optional): The dataset split to analyze. Defaults to
                                    "dev".
             min_examples (int, optional): The minimum number of examples to

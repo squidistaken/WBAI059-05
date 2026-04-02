@@ -1,4 +1,4 @@
-from src.data.data import AGNews
+from src.data.agnews import AGNews
 from src.training.eval import evaluate_model, analyze_model_errors
 from src.training.train import train_model, get_model
 from src.training.gridsearch import svm_gridsearch
